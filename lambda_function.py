@@ -1,8 +1,6 @@
 import csv
 import logging
-import pathlib
 import re
-import time
 import urllib
 import os
 from openpyxl import load_workbook
