@@ -64,8 +64,9 @@ def lambda_handler(event, context):
     processed_results = []
 
     for cell in data:
-        number = cell[0].value
+        number = str(cell[0].value)
         if number:
+            logger.debug(f"number is {number}")
             try:
                 phonenumbers.parse(number, "GB")
                 regex_result = re.search("^\d{11}$", number)
@@ -83,7 +84,7 @@ def lambda_handler(event, context):
 
 
     # Write numbers out to CSV
-    with open(OUTPUT_CSV_FILENAME, mode='w') as number_list_file:
+    with open('/tmp/'+OUTPUT_CSV_FILENAME, mode='w') as number_list_file:
         writer = csv.writer(number_list_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
 
         row_count = 0
@@ -99,14 +100,14 @@ def lambda_handler(event, context):
 
     # Move file to processed folder
 
-    source = pathlib.Path(SOURCE_XLSX_FILENAME)
-    processed_folder = pathlib.Path(OUTPUT_FOLDER)
+    #source = pathlib.Path(SOURCE_XLSX_FILENAME)
+    #processed_folder = pathlib.Path(OUTPUT_FOLDER)
 
-    destination = processed_folder.joinpath(SOURCE_XLSX_FILENAME)
-    print(destination)
+    #destination = processed_folder.joinpath(SOURCE_XLSX_FILENAME)
+    #print(destination)
 
-    if not destination.exists():
-        source.replace(destination)
+    #if not destination.exists():
+    #    source.replace(destination)
 
     # Write results out to CSV
     with open('/tmp/'+RESULTS_CSV_FILENAME, mode='w') as results_list_file:
@@ -122,6 +123,6 @@ def lambda_handler(event, context):
         logger.debug(f"Wrote {row_count} rows to {RESULTS_CSV_FILENAME}")
 
     #copy csv to S3 inbox
-    s3.meta.client.upload_file(RESULTS_CSV_FILENAME, S3BUCKETNAME, RESULTS_CSV_FILENAME)
+    s3.meta.client.upload_file('/tmp/'+OUTPUT_CSV_FILENAME, S3BUCKETNAME, OUTPUT_CSV_FILENAME)
 
     logger.info(f"Results: {processed_success} number(s) processed succesfully, {processed_error} number(s) failed.")
