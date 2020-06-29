@@ -1,0 +1,6 @@
+lib64
+pyvenv.cfg
+bin/*
+env/*
+packages/*
+processexcel.zip

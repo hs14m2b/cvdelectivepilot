@@ -118,13 +118,16 @@
                     "Variables" : {
                         "SMS_ENABLED" : {"Ref" : "SMSEnabled"},
                         "SUBJECT_SMS" : {"Ref": "SMSSubject"},
-                        "TOPIC_ARN" : {"Ref": "NotificationTopicArn"}
+                        "TOPIC_ARN" : {"Ref": "NotificationTopicArn"},
+                        "RESULTS_FOLDER": "processedupload",
+                        "OUTPUT_FOLDER": "inbox",
+                        "S3BUCKETNAME": {"Ref": "S3BucketName"}
                     }
                 },
                 "FunctionName" : {"Fn::Join": ["", [{"Ref": "EnvironmentName"}, "-", "cvd19PilotTestExcelProcessLambda"]]},
-                "Handler" : "bundle.handler",
+                "Handler" : "lambda_function.lambda_handler",
                 "Role" : {"Fn::GetAtt" : ["cvd19LambdaRole", "Arn"] },
-                "Runtime" : "nodejs12.x",
+                "Runtime" : "python3.7",
                 "Timeout" : 300,
                 "Tags" : { "Environment":  {"Ref": "EnvironmentName"} }
             },
