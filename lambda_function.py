@@ -123,6 +123,6 @@ def lambda_handler(event, context):
         logger.debug(f"Wrote {row_count} rows to {RESULTS_CSV_FILENAME}")
 
     #copy csv to S3 inbox
-    s3.meta.client.upload_file('/tmp/'+OUTPUT_CSV_FILENAME, S3BUCKETNAME, OUTPUT_CSV_FILENAME)
+    s3.upload_file('/tmp/'+OUTPUT_CSV_FILENAME, S3BUCKETNAME, OUTPUT_CSV_FILENAME)
 
     logger.info(f"Results: {processed_success} number(s) processed succesfully, {processed_error} number(s) failed.")
