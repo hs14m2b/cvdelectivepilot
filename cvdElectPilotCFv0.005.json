@@ -1,0 +1,367 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Transform": "AWS::Serverless-2016-10-31",
+    "Description" : "AWS CloudFormation Template to add role and S3 bucket for Covid 19 elective surgery pilot. ",
+  
+    "Parameters" : {
+        "IAMRoleName" : {
+            "Type" : "String",
+            "Default" : "CovidElectiveS3UploadOnlyRole",
+            "Description" : "The name of the IAM role that users assume to upload files"
+        },
+        "S3BucketName" : {
+          "Type" : "String",
+          "Default" : "cvd19electivesurgerylists",
+          "Description" : "The name of the bucket that holds the list of contact numbers and message text"
+        },
+        "S3LogBucketName" : {
+            "Type" : "String",
+            "Default" : "cvd19logbucket",
+            "Description" : "The name of the bucket that holds the logs"
+        },
+        "CloudTrailTrailName" : {
+            "Type" : "String",
+            "Default" : "CovidElectiveSurgeryAccessTrail",
+            "Description" : "The name for the CloudTrail Trail"
+        },
+        "KMSKeyArn" : {
+            "Type" : "String",
+            "Default" : "arn:aws:kms:eu-west-2:906605510545:key/d82da46d-d0d7-4a1d-b9ca-cfc9da5982b8",
+            "Description" : "The Arn of the KMS key used for SNS publishing"
+        },
+        "NotificationTopicArn" : {
+            "Type" : "String",
+            "Default" : "arn:aws:sns:eu-west-2:906605510545:npd-int-1-infra-messaging-sns-topic",
+            "Description" : "The Arn of the topic to publish S3 events"
+        },
+        "EnvironmentName" :  {
+            "Type" : "String",
+            "Default" : "prod",
+            "Description" : "The logical environment name"
+        },
+        "SMSEnabled" :  {
+            "Type" : "String",
+            "Default" : "true",
+            "Description" : "true/false flag to enable or disable SMS sending"
+        },
+        "SMSSubject" :  {
+            "Type" : "String",
+            "Default" : "NHS",
+            "Description" : "Legacy SenderID for AWS SES"
+        }
+    },  
+    "Conditions" : {
+        "ProdNaming" : {"Fn::Equals" : [{"Ref" : "EnvironmentName"}, "prod"]}
+    },
+    "Globals": {
+        "Function": {
+            "Timeout" : 300
+        }
+    },
+    "Resources" : {
+        "cvd19LambdaRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties" : {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Action": "sts:AssumeRole",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                            }
+                        }
+                    ]
+                },
+                "ManagedPolicyArns" : [ "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole", 
+                    "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"],
+                "Path": "/service-role/",
+                "RoleName" : {"Fn::Join": ["", [{"Ref": "EnvironmentName"}, "-", "cvd19LambdaRole"]]}
+            }
+        },
+        "cvd19PilotInviteSendFunction": {
+            "Type": "AWS::Serverless::Function",
+            "Properties": {
+                "CodeUri": {
+                    "Bucket" : "cvd19pilotcoderepo",
+                    "Key" : "lambda.zip"
+                },
+                "Description" : "The lambda function that reads the file and triggers the SNS topic for each entry. It moves the file to the processed folder when complete",
+                "Environment" : {
+                    "Variables" : {
+                        "SMS_ENABLED" : {"Ref" : "SMSEnabled"},
+                        "SUBJECT_SMS" : {"Ref": "SMSSubject"},
+                        "TOPIC_ARN" : {"Ref": "NotificationTopicArn"}
+                    }
+                },
+                "FunctionName" : {"Fn::Join": ["", [{"Ref": "EnvironmentName"}, "-", "cvd19PilotTestInviteSendLambda"]]},
+                "Handler" : "bundle.handler",
+                "Role" : {"Fn::GetAtt" : ["cvd19LambdaRole", "Arn"] },
+                "Runtime" : "nodejs12.x",
+                "Timeout" : 300,
+                "Tags" : { "Environment":  {"Ref": "EnvironmentName"} }
+            },
+            "DependsOn": [
+                "cvd19LambdaRole"
+            ]
+        },
+        "cvd19statuscheckFunctionLambdaPermission": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+                "Action": "lambda:invokeFunction",
+                "FunctionName": {"Ref": "cvd19PilotInviteSendFunction"},
+                "Principal": "s3.amazonaws.com",
+                "SourceArn": { "Fn::Join" : [ "", [ "arn:aws:s3:::", {"Fn::If" : ["ProdNaming",
+                    {"Ref": "S3BucketName"},
+                    { "Fn::Join" : [ "", [ {"Ref": "EnvironmentName"}, {"Ref": "S3BucketName"} ] ]} ]} ]]}
+            }
+        },
+        "cvd19CustomPolicyLambdaRole": {
+            "Type" : "AWS::IAM::Policy",
+            "Properties" : {
+                "PolicyDocument" : {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Action": [
+                          "sns:*"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": {"Ref": "NotificationTopicArn"}
+                      },
+                      {
+                        "Action": [
+                          "s3:DeleteObject",
+                          "s3:GetObject"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": [
+                            { "Fn::Join" : [ "", [ { "Fn::GetAtt" : [ "cvdS3Bucket", "Arn" ] }, "/inbox/*" ] ] }
+                        ]
+                      },
+                      {
+                        "Action": [
+                          "s3:PutObject"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": [
+                            { "Fn::Join" : [ "", [ { "Fn::GetAtt" : [ "cvdS3Bucket", "Arn" ] }, "/processed/*" ] ] }
+                        ]
+                      },
+                      {
+                        "Action": [
+                        "kms:Get*",
+                        "kms:GenerateDataKey*",
+                        "kms:Decrypt"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": {"Ref": "KMSKeyArn"}
+                    }
+                                        ]
+                  },
+                "PolicyName" : {"Fn::Join": ["", [{"Ref": "EnvironmentName"}, "-", "cvd19PilotTestInvitePolicy"]]},
+                "Roles" : [ {"Ref" : "cvd19LambdaRole"} ]
+            }
+        },
+        "cvdS3LogBucket" : {
+            "Type" : "AWS::S3::Bucket",
+            "Properties" : {
+                "AccessControl" : "LogDeliveryWrite",
+                "BucketEncryption" : {
+                    "ServerSideEncryptionConfiguration" : [ {
+                        "ServerSideEncryptionByDefault" : {
+                            "SSEAlgorithm" : "AES256"
+                          }
+                      }
+                    ]
+                },
+                "BucketName" : {"Fn::If" : ["ProdNaming",
+                    {"Ref": "S3LogBucketName"},
+                    { "Fn::Join" : [ "", [ {"Ref": "EnvironmentName"}, {"Ref": "S3LogBucketName"} ] ]}
+                ]},
+                "PublicAccessBlockConfiguration" : {
+                    "BlockPublicAcls" : true,
+                    "BlockPublicPolicy" : true,
+                    "IgnorePublicAcls" : true,
+                    "RestrictPublicBuckets" : true
+                },
+                "VersioningConfiguration" : {
+                    "Status" : "Suspended"
+                }
+            },
+            "DependsOn": ["cvd19statuscheckFunctionLambdaPermission"]
+        },
+        "cvdS3Bucket" : {
+            "Type" : "AWS::S3::Bucket",
+            "Properties" : {
+                "BucketEncryption" : {
+                    "ServerSideEncryptionConfiguration" : [ {
+                        "ServerSideEncryptionByDefault" : {
+                            "SSEAlgorithm" : "AES256"
+                          }
+                      }
+                    ]
+                },
+                "BucketName" : {"Fn::If" : ["ProdNaming",
+                    {"Ref": "S3BucketName"},
+                    { "Fn::Join" : [ "", [ {"Ref": "EnvironmentName"}, {"Ref": "S3BucketName"} ] ]}
+                ]},
+                "LoggingConfiguration" : {
+                    "DestinationBucketName" : {"Ref": "cvdS3LogBucket"},
+                    "LogFilePrefix": "S3AccessLogs/"
+                },
+                "NotificationConfiguration" : {
+                    "LambdaConfigurations" : [ {
+                        "Event" : "s3:ObjectCreated:Put",
+                        "Filter" : {
+                            "S3Key" : {
+                                "Rules" : [ {
+                                    "Name" : "prefix",
+                                    "Value" : "inbox/"
+                                  }
+                                ]
+                            }
+                        },
+                        "Function" : {"Fn::GetAtt": ["cvd19PilotInviteSendFunction", "Arn"]}
+                    }]
+                },
+                "PublicAccessBlockConfiguration" : {
+                    "BlockPublicAcls" : true,
+                    "BlockPublicPolicy" : true,
+                    "IgnorePublicAcls" : true,
+                    "RestrictPublicBuckets" : true
+                },
+                "VersioningConfiguration" : {
+                    "Status" : "Suspended"
+                }
+              }
+        },
+        "cloudTrailBucketPolicy" : {
+            "Type" : "AWS::S3::BucketPolicy",
+            "Properties" : {
+                "Bucket" : {"Ref": "cvdS3LogBucket"},
+                "PolicyDocument" : 
+                {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "AWSCloudTrailAclCheck20150319",
+                            "Effect": "Allow",
+                            "Principal": {"Service": "cloudtrail.amazonaws.com"},
+                            "Action": "s3:GetBucketAcl",
+                            "Resource": { "Fn::Join" : [ "", ["arn:aws:s3:::", {"Ref": "cvdS3LogBucket"}]]}
+                        },
+                        {
+                            "Sid": "AWSCloudTrailWrite20150319",
+                            "Effect": "Allow",
+                            "Principal": {"Service": "cloudtrail.amazonaws.com"},
+                            "Action": "s3:PutObject",
+                            "Resource": { "Fn::Join" : [ "", ["arn:aws:s3:::", {"Ref": "cvdS3LogBucket"}, "/*"]]}
+                        }
+                    ]
+                }
+            }
+        },
+        "cloudTrailForObjectLogging": {
+            "Type" : "AWS::CloudTrail::Trail",
+            "Properties" : {
+                "EventSelectors" : [ {
+                    "DataResources" : [ {
+                        "Type" : "AWS::S3::Object",
+                        "Values" : [ { "Fn::Join" : [ "", ["arn:aws:s3:::", {"Ref": "cvdS3Bucket"}, "/"]]} ]
+                      }
+                    ],
+                    "IncludeManagementEvents" : false,
+                    "ReadWriteType" : "All"
+                  }
+                ],
+                "IsLogging" : true,
+                "S3BucketName" : {"Ref": "cvdS3LogBucket"},
+                "S3KeyPrefix" : "CloudTrailLogs",
+                "TrailName" : { "Fn::Join" : [ "", [ {"Ref": "EnvironmentName"}, {"Ref": "CloudTrailTrailName"} ] ] }
+            },
+            "DependsOn": ["cloudTrailBucketPolicy"]
+        },
+        "cvdUploadOnlyRole": {
+            "Type" : "AWS::IAM::Role",
+            "Properties" : {
+                "AssumeRolePolicyDocument" : {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Principal": {
+                          "AWS": "arn:aws:iam::347250048819:root"
+                        },
+                        "Action": "sts:AssumeRole",
+                        "Condition": {
+                          "Bool": {
+                            "aws:MultiFactorAuthPresent": "true"
+                          }
+                        }
+                      }
+                    ]
+                },
+                "Description" : "A role to enable Service Management to upload files to a specific S3 bucket only",
+                "RoleName" : {"Fn::If" : ["ProdNaming",
+                    {"Ref": "IAMRoleName"},
+                    { "Fn::Join" : [ "", [ {"Ref": "EnvironmentName"}, {"Ref": "IAMRoleName"} ] ]}
+                ]},
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyName": "S3UploadOnly",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Sid": "VisualEditor0",
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "s3:ListBucket"
+                                    ],
+                                    "Resource": [
+                                        { "Fn::GetAtt" : [ "cvdS3Bucket", "Arn" ] },
+                                        { "Fn::Join" : [ "", [ { "Fn::GetAtt" : [ "cvdS3Bucket", "Arn" ] }, "/*" ] ] }
+                                    ]
+                                },
+                                {
+                                    "Sid": "VisualEditor2",
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "s3:PutObject"
+                                    ],
+                                    "Resource": [
+                                        { "Fn::GetAtt" : [ "cvdS3Bucket", "Arn" ] },
+                                        { "Fn::Join" : [ "", [ { "Fn::GetAtt" : [ "cvdS3Bucket", "Arn" ] }, "/inbox/*" ] ] }
+                                    ]
+                                },
+                                {
+                                    "Sid": "VisualEditor3",
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "s3:GetObject",
+                                        "s3:ListObjects",
+                                        "s3:ListObjectsV2"
+                                    ],
+                                    "Resource": [
+                                        { "Fn::GetAtt" : [ "cvdS3Bucket", "Arn" ] },
+                                        { "Fn::Join" : [ "", [ { "Fn::GetAtt" : [ "cvdS3Bucket", "Arn" ] }, "/processed/*" ] ] }
+                                    ]
+                                },
+                                {
+                                    "Sid": "VisualEditor1",
+                                    "Effect": "Allow",
+                                    "Action": "s3:HeadBucket",
+                                    "Resource": "*"
+                                }
+                            ]
+                        }
+                    }
+                ]
+             }
+        }
+    }
+}
+  
