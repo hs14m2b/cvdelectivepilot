@@ -36,10 +36,14 @@ def lambda_handler(event, context):
     logger.debug(f"bucket is {bucket}")
     key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'], encoding='utf-8')
     logger.debug(f"key is {key}")
-    file_name = key.split('/')[1]
-    file_name_prefix = key.split('.')[0]
+    file_name = key.split('/')[1].replace(' ', '_')
+    logger.debug(f"file_name is {file_name}")
+    file_name_prefix = file_name.split('.')[0]
+    logger.debug(f"file_name_prefix is {file_name_prefix}")
     OUTPUT_CSV_FILENAME = file_name_prefix+'.csv'
+    logger.debug(f"OUTPUT_CSV_FILENAME is {OUTPUT_CSV_FILENAME}")
     RESULTS_CSV_FILENAME = file_name_prefix+'_results.csv'
+    logger.debug(f"RESULTS_CSV_FILENAME is {RESULTS_CSV_FILENAME}")
 
     obj = s3.get_object(Bucket=bucket, Key=key) 
     binary_data = obj['Body'].read()
