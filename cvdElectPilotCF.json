@@ -121,7 +121,9 @@
                         "TOPIC_ARN" : {"Ref": "NotificationTopicArn"},
                         "RESULTS_FOLDER": "processedupload",
                         "OUTPUT_FOLDER": "inbox",
-                        "S3BUCKETNAME": {"Ref": "S3BucketName"}
+                        "S3BUCKETNAME": {"Fn::If" : ["ProdNaming",
+                            {"Ref": "S3BucketName"},
+                            { "Fn::Join" : [ "", [ {"Ref": "EnvironmentName"}, {"Ref": "S3BucketName"} ] ]}]}
                     }
                 },
                 "FunctionName" : {"Fn::Join": ["", [{"Ref": "EnvironmentName"}, "-", "cvd19PilotTestExcelProcessLambda"]]},
