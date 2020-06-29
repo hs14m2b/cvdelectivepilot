@@ -119,7 +119,7 @@
                         "SMS_ENABLED" : {"Ref" : "SMSEnabled"},
                         "SUBJECT_SMS" : {"Ref": "SMSSubject"},
                         "TOPIC_ARN" : {"Ref": "NotificationTopicArn"},
-                        "RESULTS_FOLDER": "processedoutput",
+                        "RESULTS_FOLDER": "processedupload",
                         "OUTPUT_FOLDER": "inbox",
                         "S3BUCKETNAME": {"Ref": "S3BucketName"}
                     }

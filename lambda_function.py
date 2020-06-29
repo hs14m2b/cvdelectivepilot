@@ -8,12 +8,15 @@ import os
 from openpyxl import load_workbook
 import phonenumbers
 from phonenumbers import NumberParseException
+from io import BytesIO
 
 import boto3
 
 # Set up logging
-logging.basicConfig(level=logging.DEBUG)
-logging.debug('This will get logged')
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+
+logger.debug('This will get logged')
 
 # Config Items
 SOURCE_XLSX_FILENAME = "Trust Submission Template - v2.xlsx"
@@ -32,11 +35,13 @@ s3 = boto3.client('s3')
 
 def lambda_handler(event, context):
 
-    logging.debug(f"event is {event}")
+    logger.debug(f"event is {event}")
     bucket = event['Records'][0]['s3']['bucket']['name']
+    logger.debug(f"bucket is {bucket}")
     key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'], encoding='utf-8')
+    logger.debug(f"key is {key}")
 
-    obj = s3.get_object(Bucket='bucket-name', Key=key) 
+    obj = s3.get_object(Bucket=bucket, Key=key) 
     binary_data = obj['Body'].read()
     
     # Load workbook
@@ -67,12 +72,12 @@ def lambda_handler(event, context):
                 if not regex_result:
                     raise ValueError("Does not match regex")
                 export_list.append(cell)
-                logging.info(number)
+                logger.info(number)
                 processed_success += 1
                 processed_results.append((number, "Processed"))
 
             except (ValueError, NumberParseException) as e:
-                logging.error(e)
+                logger.error(e)
                 processed_error += 1
                 processed_results.append((number, e))
 
@@ -90,7 +95,7 @@ def lambda_handler(event, context):
             row_count += 1
 
         print(row_count)    
-        logging.debug(f"Wrote {row_count} rows to {OUTPUT_CSV_FILENAME}")
+        logger.debug(f"Wrote {row_count} rows to {OUTPUT_CSV_FILENAME}")
 
     # Move file to processed folder
 
@@ -114,11 +119,9 @@ def lambda_handler(event, context):
             row_count += 1
 
         print(row_count)    
-        logging.debug(f"Wrote {row_count} rows to {RESULTS_CSV_FILENAME}")
+        logger.debug(f"Wrote {row_count} rows to {RESULTS_CSV_FILENAME}")
 
     #copy csv to S3 inbox
     s3.meta.client.upload_file(RESULTS_CSV_FILENAME, S3BUCKETNAME, RESULTS_CSV_FILENAME)
 
-    logging.info(f"Results: {processed_success} number(s) processed succesfully, {processed_error} number(s) failed.")
-
-lambda_handler(None, None)
+    logger.info(f"Results: {processed_success} number(s) processed succesfully, {processed_error} number(s) failed.")
