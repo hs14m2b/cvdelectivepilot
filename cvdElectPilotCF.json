@@ -106,11 +106,48 @@
                 "cvd19LambdaRole"
             ]
         },
+        "cvd19PilotExcelProcessFunction": {
+            "Type": "AWS::Serverless::Function",
+            "Properties": {
+                "CodeUri": {
+                    "Bucket" : "cvd19pilotcoderepo",
+                    "Key" : "processexcel.zip"
+                },
+                "Description" : "The lambda function that processes an excel template with phone numbers and message template. If creates a processed CSV in the inbox folder for SMS sending",
+                "Environment" : {
+                    "Variables" : {
+                        "SMS_ENABLED" : {"Ref" : "SMSEnabled"},
+                        "SUBJECT_SMS" : {"Ref": "SMSSubject"},
+                        "TOPIC_ARN" : {"Ref": "NotificationTopicArn"}
+                    }
+                },
+                "FunctionName" : {"Fn::Join": ["", [{"Ref": "EnvironmentName"}, "-", "cvd19PilotTestExcelProcessLambda"]]},
+                "Handler" : "bundle.handler",
+                "Role" : {"Fn::GetAtt" : ["cvd19LambdaRole", "Arn"] },
+                "Runtime" : "nodejs12.x",
+                "Timeout" : 300,
+                "Tags" : { "Environment":  {"Ref": "EnvironmentName"} }
+            },
+            "DependsOn": [
+                "cvd19LambdaRole"
+            ]
+        },
         "cvd19statuscheckFunctionLambdaPermission": {
             "Type": "AWS::Lambda::Permission",
             "Properties": {
                 "Action": "lambda:invokeFunction",
                 "FunctionName": {"Ref": "cvd19PilotInviteSendFunction"},
+                "Principal": "s3.amazonaws.com",
+                "SourceArn": { "Fn::Join" : [ "", [ "arn:aws:s3:::", {"Fn::If" : ["ProdNaming",
+                    {"Ref": "S3BucketName"},
+                    { "Fn::Join" : [ "", [ {"Ref": "EnvironmentName"}, {"Ref": "S3BucketName"} ] ]} ]} ]]}
+            }
+        },
+        "cvd19processExcelFunctionLambdaPermission": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+                "Action": "lambda:invokeFunction",
+                "FunctionName": {"Ref": "cvd19PilotExcelProcessFunction"},
                 "Principal": "s3.amazonaws.com",
                 "SourceArn": { "Fn::Join" : [ "", [ "arn:aws:s3:::", {"Fn::If" : ["ProdNaming",
                     {"Ref": "S3BucketName"},
@@ -133,20 +170,15 @@
                       {
                         "Action": [
                           "s3:DeleteObject",
-                          "s3:GetObject"
-                        ],
-                        "Effect": "Allow",
-                        "Resource": [
-                            { "Fn::Join" : [ "", [ { "Fn::GetAtt" : [ "cvdS3Bucket", "Arn" ] }, "/inbox/*" ] ] }
-                        ]
-                      },
-                      {
-                        "Action": [
+                          "s3:GetObject",
                           "s3:PutObject"
                         ],
                         "Effect": "Allow",
                         "Resource": [
-                            { "Fn::Join" : [ "", [ { "Fn::GetAtt" : [ "cvdS3Bucket", "Arn" ] }, "/processed/*" ] ] }
+                            { "Fn::Join" : [ "", [ { "Fn::GetAtt" : [ "cvdS3Bucket", "Arn" ] }, "/inbox/*" ] ] },
+                            { "Fn::Join" : [ "", [ { "Fn::GetAtt" : [ "cvdS3Bucket", "Arn" ] }, "/processed/*" ] ] },
+                            { "Fn::Join" : [ "", [ { "Fn::GetAtt" : [ "cvdS3Bucket", "Arn" ] }, "/upload/*" ] ] },
+                            { "Fn::Join" : [ "", [ { "Fn::GetAtt" : [ "cvdS3Bucket", "Arn" ] }, "/processedupload/*" ] ] }
                         ]
                       },
                       {
@@ -158,7 +190,7 @@
                         "Effect": "Allow",
                         "Resource": {"Ref": "KMSKeyArn"}
                     }
-                                        ]
+                    ]
                   },
                 "PolicyName" : {"Fn::Join": ["", [{"Ref": "EnvironmentName"}, "-", "cvd19PilotTestInvitePolicy"]]},
                 "Roles" : [ {"Ref" : "cvd19LambdaRole"} ]
@@ -224,7 +256,20 @@
                             }
                         },
                         "Function" : {"Fn::GetAtt": ["cvd19PilotInviteSendFunction", "Arn"]}
-                    }]
+                    },
+                    {
+                        "Event" : "s3:ObjectCreated:Put",
+                        "Filter" : {
+                            "S3Key" : {
+                                "Rules" : [ {
+                                    "Name" : "prefix",
+                                    "Value" : "upload/"
+                                  }
+                                ]
+                            }
+                        },
+                        "Function" : {"Fn::GetAtt": ["cvd19PilotExcelProcessFunction", "Arn"]}
+                    }                ]
                 },
                 "PublicAccessBlockConfiguration" : {
                     "BlockPublicAcls" : true,
@@ -334,7 +379,8 @@
                                     ],
                                     "Resource": [
                                         { "Fn::GetAtt" : [ "cvdS3Bucket", "Arn" ] },
-                                        { "Fn::Join" : [ "", [ { "Fn::GetAtt" : [ "cvdS3Bucket", "Arn" ] }, "/inbox/*" ] ] }
+                                        { "Fn::Join" : [ "", [ { "Fn::GetAtt" : [ "cvdS3Bucket", "Arn" ] }, "/inbox/*" ] ] },
+                                        { "Fn::Join" : [ "", [ { "Fn::GetAtt" : [ "cvdS3Bucket", "Arn" ] }, "/upload/*" ] ] }
                                     ]
                                 },
                                 {
@@ -347,7 +393,8 @@
                                     ],
                                     "Resource": [
                                         { "Fn::GetAtt" : [ "cvdS3Bucket", "Arn" ] },
-                                        { "Fn::Join" : [ "", [ { "Fn::GetAtt" : [ "cvdS3Bucket", "Arn" ] }, "/processed/*" ] ] }
+                                        { "Fn::Join" : [ "", [ { "Fn::GetAtt" : [ "cvdS3Bucket", "Arn" ] }, "/processed/*" ] ] },
+                                        { "Fn::Join" : [ "", [ { "Fn::GetAtt" : [ "cvdS3Bucket", "Arn" ] }, "/uploadprocessed/*" ] ] }
                                     ]
                                 },
                                 {
