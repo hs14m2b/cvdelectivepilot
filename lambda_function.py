@@ -6,8 +6,8 @@ import time
 import urllib
 import os
 from openpyxl import load_workbook
-import phonenumbers
-from phonenumbers import NumberParseException
+#import phonenumbers
+#from phonenumbers import NumberParseException
 from io import BytesIO
 
 import boto3
@@ -72,8 +72,8 @@ def lambda_handler(event, context):
         if number:
             logger.debug(f"number is {number}")
             try:
-                phonenumbers.parse(number, "GB")
-                regex_result = re.search("^\d{11}$", number)
+                #phonenumbers.parse(number, "GB")
+                regex_result = re.search("^[0+]\d{10,14}$", number)
                 if not regex_result:
                     raise ValueError("Does not match regex")
                 export_list.append(cell)
@@ -81,7 +81,7 @@ def lambda_handler(event, context):
                 processed_success += 1
                 processed_results.append((number, "Processed"))
 
-            except (ValueError, NumberParseException) as e:
+            except (ValueError) as e:
                 logger.error(e)
                 processed_error += 1
                 processed_results.append((number, e))
