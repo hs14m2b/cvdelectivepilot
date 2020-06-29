@@ -399,7 +399,7 @@
                                     "Resource": [
                                         { "Fn::GetAtt" : [ "cvdS3Bucket", "Arn" ] },
                                         { "Fn::Join" : [ "", [ { "Fn::GetAtt" : [ "cvdS3Bucket", "Arn" ] }, "/processed/*" ] ] },
-                                        { "Fn::Join" : [ "", [ { "Fn::GetAtt" : [ "cvdS3Bucket", "Arn" ] }, "/uploadprocessed/*" ] ] }
+                                        { "Fn::Join" : [ "", [ { "Fn::GetAtt" : [ "cvdS3Bucket", "Arn" ] }, "/processedupload/*" ] ] }
                                     ]
                                 },
                                 {
