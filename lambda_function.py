@@ -69,7 +69,7 @@ def lambda_handler(event, context):
 
     for cell in data:
         number = str(cell[0].value)
-        if number:
+        if number and number != "None":
             logger.debug(f"number is {number}")
             try:
                 #phonenumbers.parse(number, "GB")

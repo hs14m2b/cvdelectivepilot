@@ -48,6 +48,11 @@
             "Type" : "String",
             "Default" : "NHS",
             "Description" : "Legacy SenderID for AWS SES"
+        },
+        "SNSTopicName": {
+            "Type" : "String",
+            "Default" : "cvdelvetivesummresults",
+            "Description" : "The SNS Topic Name to which results summaries are published"
         }
     },  
     "Conditions" : {
@@ -137,6 +142,30 @@
                 "cvd19LambdaRole"
             ]
         },
+        "cvd19PilotResultsSummaryFunction": {
+            "Type": "AWS::Serverless::Function",
+            "Properties": {
+                "CodeUri": {
+                    "Bucket" : "cvd19pilotcoderepo",
+                    "Key" : "processresults.zip"
+                },
+                "Description" : "The lambda function that reads the processed files and sends a summary to the SNS topic. The Service Management team email address are subscribed to this topic",
+                "Environment" : {
+                    "Variables" : {
+                        "RESULTS_SNS_TOPIC" : {"Ref": "cvd19resultssnstopic"}
+                    }
+                },
+                "FunctionName" : {"Fn::Join": ["", [{"Ref": "EnvironmentName"}, "-", "cvd19PilotResultsSummaryFunction"]]},
+                "Handler" : "count_results_function.lambda_handler",
+                "Role" : {"Fn::GetAtt" : ["cvd19LambdaRole", "Arn"] },
+                "Runtime" : "python3.7",
+                "Timeout" : 300,
+                "Tags" : { "Environment":  {"Ref": "EnvironmentName"} }
+            },
+            "DependsOn": [
+                "cvd19LambdaRole"
+            ]
+        },
         "cvd19statuscheckFunctionLambdaPermission": {
             "Type": "AWS::Lambda::Permission",
             "Properties": {
@@ -159,6 +188,17 @@
                     { "Fn::Join" : [ "", [ {"Ref": "EnvironmentName"}, {"Ref": "S3BucketName"} ] ]} ]} ]]}
             }
         },
+        "cvd19PilotResultsSummaryFunctionLambdaPermission": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+                "Action": "lambda:invokeFunction",
+                "FunctionName": {"Ref": "cvd19PilotResultsSummaryFunction"},
+                "Principal": "s3.amazonaws.com",
+                "SourceArn": { "Fn::Join" : [ "", [ "arn:aws:s3:::", {"Fn::If" : ["ProdNaming",
+                    {"Ref": "S3BucketName"},
+                    { "Fn::Join" : [ "", [ {"Ref": "EnvironmentName"}, {"Ref": "S3BucketName"} ] ]} ]} ]]}
+            }
+        },
         "cvd19CustomPolicyLambdaRole": {
             "Type" : "AWS::IAM::Policy",
             "Properties" : {
@@ -170,7 +210,10 @@
                           "sns:*"
                         ],
                         "Effect": "Allow",
-                        "Resource": {"Ref": "NotificationTopicArn"}
+                        "Resource": [
+                            {"Ref": "NotificationTopicArn"},
+                            {"Ref": "cvd19resultssnstopic"}
+                        ]
                       },
                       {
                         "Action": [
@@ -274,7 +317,21 @@
                             }
                         },
                         "Function" : {"Fn::GetAtt": ["cvd19PilotExcelProcessFunction", "Arn"]}
-                    }                ]
+                    },            
+                    {
+                        "Event" : "s3:ObjectCreated:Put",
+                        "Filter" : {
+                            "S3Key" : {
+                                "Rules" : [ {
+                                    "Name" : "prefix",
+                                    "Value" : "processed/"
+                                  }
+                                ]
+                            }
+                        },
+                        "Function" : {"Fn::GetAtt": ["cvd19PilotResultsSummaryFunction", "Arn"]}
+                    }
+                ]
                 },
                 "PublicAccessBlockConfiguration" : {
                     "BlockPublicAcls" : true,
@@ -332,6 +389,12 @@
                 "TrailName" : { "Fn::Join" : [ "", [ {"Ref": "EnvironmentName"}, {"Ref": "CloudTrailTrailName"} ] ] }
             },
             "DependsOn": ["cloudTrailBucketPolicy"]
+        },
+        "cvd19resultssnstopic" : {
+            "Type" : "AWS::SNS::Topic",
+            "Properties" : {
+                "TopicName" : { "Fn::Join" : [ "", [ {"Ref": "EnvironmentName"}, {"Ref": "SNSTopicName"} ] ]}
+            }
         },
         "cvdUploadOnlyRole": {
             "Type" : "AWS::IAM::Role",
