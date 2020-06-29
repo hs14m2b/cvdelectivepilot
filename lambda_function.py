@@ -123,6 +123,13 @@ def lambda_handler(event, context):
         logger.debug(f"Wrote {row_count} rows to {RESULTS_CSV_FILENAME}")
 
     #copy csv to S3 inbox
-    s3.upload_file('/tmp/'+OUTPUT_CSV_FILENAME, S3BUCKETNAME, OUTPUT_CSV_FILENAME)
+    s3.upload_file('/tmp/'+OUTPUT_CSV_FILENAME, S3BUCKETNAME, OUTPUT_FOLDER+'/'+OUTPUT_CSV_FILENAME)
+    logger.debug(f"Copied output file to {OUTPUT_FOLDER} folder")
+
+    s3.upload_file('/tmp/'+RESULTS_CSV_FILENAME, S3BUCKETNAME, RESULTS_FOLDER+'/'+RESULTS_CSV_FILENAME)
+    logger.debug(f"Copied results file to {RESULTS_FOLDER} folder")
+
+    s3.delete_object(Bucket=bucket, Key=key)
+    logger.debug(f"Deleted original inbound file {key}")
 
     logger.info(f"Results: {processed_success} number(s) processed succesfully, {processed_error} number(s) failed.")
