@@ -6,8 +6,6 @@ import time
 import urllib
 import os
 from openpyxl import load_workbook
-#import phonenumbers
-#from phonenumbers import NumberParseException
 from io import BytesIO
 
 import boto3
@@ -49,7 +47,6 @@ def lambda_handler(event, context):
     binary_data = obj['Body'].read()
     
     # Load workbook
-    # workbook = load_workbook(filename=SOURCE_XLSX_FILENAME, read_only=True)
     workbook = load_workbook(BytesIO(binary_data))
 
     # Get message content
@@ -72,10 +69,9 @@ def lambda_handler(event, context):
         if number and number != "None":
             logger.debug(f"number is {number}")
             try:
-                #phonenumbers.parse(number, "GB")
-                regex_result = re.search("^[0+]\d{10,14}$", number)
+                regex_result = re.search(r"^[0+]\d{10,14}$", number)
                 if not regex_result:
-                    raise ValueError("Does not match regex")
+                    raise ValueError("Does not match specified number format")
                 export_list.append(cell)
                 logger.info(number)
                 processed_success += 1
@@ -96,24 +92,11 @@ def lambda_handler(event, context):
         writer.writerow(['mobile', 'message'])
 
         for row in export_list:
-            #print(row)
             number = str(row[0].value)
             writer.writerow([number, message])
             row_count += 1
 
-        print(row_count)    
         logger.debug(f"Wrote {row_count} rows to {OUTPUT_CSV_FILENAME}")
-
-    # Move file to processed folder
-
-    #source = pathlib.Path(SOURCE_XLSX_FILENAME)
-    #processed_folder = pathlib.Path(OUTPUT_FOLDER)
-
-    #destination = processed_folder.joinpath(SOURCE_XLSX_FILENAME)
-    #print(destination)
-
-    #if not destination.exists():
-    #    source.replace(destination)
 
     # Write results out to CSV
     with open('/tmp/'+RESULTS_CSV_FILENAME, mode='w') as results_list_file:
@@ -124,11 +107,10 @@ def lambda_handler(event, context):
         for item in processed_results:
             writer.writerow([item[0], item[1]])
             row_count += 1
-
-        print(row_count)    
+ 
         logger.debug(f"Wrote {row_count} rows to {RESULTS_CSV_FILENAME}")
 
-    #copy csv to S3 inbox
+    # Copy CSVs to S3 locations
     s3.upload_file('/tmp/'+OUTPUT_CSV_FILENAME, S3BUCKETNAME, OUTPUT_FOLDER+'/'+OUTPUT_CSV_FILENAME)
     logger.debug(f"Copied output file to {OUTPUT_FOLDER} folder")
 
