@@ -166,6 +166,30 @@
                 "cvd19LambdaRole"
             ]
         },
+        "cvd19PilotUploadsSummaryFunction": {
+            "Type": "AWS::Serverless::Function",
+            "Properties": {
+                "CodeUri": {
+                    "Bucket" : "cvd19pilotcoderepo",
+                    "Key" : "processresults.zip"
+                },
+                "Description" : "The lambda function that reads the uploaded files and sends a summary to the SNS topic. The Service Management team email address are subscribed to this topic",
+                "Environment" : {
+                    "Variables" : {
+                        "RESULTS_SNS_TOPIC" : {"Ref": "cvd19resultssnstopic"}
+                    }
+                },
+                "FunctionName" : {"Fn::Join": ["", [{"Ref": "EnvironmentName"}, "-", "cvd19PilotUploadsSummaryFunction"]]},
+                "Handler" : "count_uploads_function.lambda_handler",
+                "Role" : {"Fn::GetAtt" : ["cvd19LambdaRole", "Arn"] },
+                "Runtime" : "python3.7",
+                "Timeout" : 300,
+                "Tags" : { "Environment":  {"Ref": "EnvironmentName"} }
+            },
+            "DependsOn": [
+                "cvd19LambdaRole"
+            ]
+        },
         "cvd19statuscheckFunctionLambdaPermission": {
             "Type": "AWS::Lambda::Permission",
             "Properties": {
@@ -193,6 +217,17 @@
             "Properties": {
                 "Action": "lambda:invokeFunction",
                 "FunctionName": {"Ref": "cvd19PilotResultsSummaryFunction"},
+                "Principal": "s3.amazonaws.com",
+                "SourceArn": { "Fn::Join" : [ "", [ "arn:aws:s3:::", {"Fn::If" : ["ProdNaming",
+                    {"Ref": "S3BucketName"},
+                    { "Fn::Join" : [ "", [ {"Ref": "EnvironmentName"}, {"Ref": "S3BucketName"} ] ]} ]} ]]}
+            }
+        },
+        "cvd19PilotUploadsSummaryFunctionLambdaPermission": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+                "Action": "lambda:invokeFunction",
+                "FunctionName": {"Ref": "cvd19PilotUploadsSummaryFunction"},
                 "Principal": "s3.amazonaws.com",
                 "SourceArn": { "Fn::Join" : [ "", [ "arn:aws:s3:::", {"Fn::If" : ["ProdNaming",
                     {"Ref": "S3BucketName"},
@@ -330,6 +365,19 @@
                             }
                         },
                         "Function" : {"Fn::GetAtt": ["cvd19PilotResultsSummaryFunction", "Arn"]}
+                    },
+                    {
+                        "Event" : "s3:ObjectCreated:Put",
+                        "Filter" : {
+                            "S3Key" : {
+                                "Rules" : [ {
+                                    "Name" : "prefix",
+                                    "Value" : "processedupload/"
+                                  }
+                                ]
+                            }
+                        },
+                        "Function" : {"Fn::GetAtt": ["cvd19PilotUploadsSummaryFunction", "Arn"]}
                     }
                 ]
                 },
