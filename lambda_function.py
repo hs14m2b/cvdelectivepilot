@@ -4,11 +4,12 @@ import pathlib
 import re
 import time
 import urllib
-
-import boto3
+import os
 from openpyxl import load_workbook
 import phonenumbers
 from phonenumbers import NumberParseException
+
+import boto3
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
@@ -18,15 +19,20 @@ logging.debug('This will get logged')
 SOURCE_XLSX_FILENAME = "Trust Submission Template - v2.xlsx"
 SOURCE_FOLDER = "upload"
 OUTPUT_CSV_FILENAME = "number_list_output.csv"
-OUTPUT_FOLDER = "inbox"
+#OUTPUT_FOLDER = "inbox"
 RESULTS_CSV_FILENAME = "results.csv"
-RESULTS_FOLDER = "processedupload"
+#RESULTS_FOLDER = "processedupload"
+
+RESULTS_FOLDER = os.getenv(key="RESULTS_FOLDER")
+OUTPUT_FOLDER = os.getenv(key="OUTPUT_FOLDER")
+S3BUCKETNAME = os.getenv(key="S3BUCKETNAME")
 
 # Set up S3 client
 s3 = boto3.client('s3')
 
 def lambda_handler(event, context):
 
+    logging.debug(f"event is {event}")
     bucket = event['Records'][0]['s3']['bucket']['name']
     key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'], encoding='utf-8')
 
@@ -98,7 +104,7 @@ def lambda_handler(event, context):
         source.replace(destination)
 
     # Write results out to CSV
-    with open(RESULTS_CSV_FILENAME, mode='w') as results_list_file:
+    with open('/tmp/'+RESULTS_CSV_FILENAME, mode='w') as results_list_file:
         writer = csv.writer(results_list_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
 
         row_count = 0
@@ -109,6 +115,9 @@ def lambda_handler(event, context):
 
         print(row_count)    
         logging.debug(f"Wrote {row_count} rows to {RESULTS_CSV_FILENAME}")
+
+    #copy csv to S3 inbox
+    s3.meta.client.upload_file(RESULTS_CSV_FILENAME, S3BUCKETNAME, RESULTS_CSV_FILENAME)
 
     logging.info(f"Results: {processed_success} number(s) processed succesfully, {processed_error} number(s) failed.")
 
