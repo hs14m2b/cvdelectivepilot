@@ -21,10 +21,6 @@ logger.debug('This will get logged')
 # Config Items
 SOURCE_XLSX_FILENAME = "Trust Submission Template - v2.xlsx"
 SOURCE_FOLDER = "upload"
-OUTPUT_CSV_FILENAME = "number_list_output.csv"
-#OUTPUT_FOLDER = "inbox"
-RESULTS_CSV_FILENAME = "results.csv"
-#RESULTS_FOLDER = "processedupload"
 
 RESULTS_FOLDER = os.getenv(key="RESULTS_FOLDER")
 OUTPUT_FOLDER = os.getenv(key="OUTPUT_FOLDER")
@@ -40,6 +36,10 @@ def lambda_handler(event, context):
     logger.debug(f"bucket is {bucket}")
     key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'], encoding='utf-8')
     logger.debug(f"key is {key}")
+    file_name = key.split('/')[1]
+    file_name_prefix = key.split('.')[0]
+    OUTPUT_CSV_FILENAME = file_name_prefix+'.csv'
+    RESULTS_CSV_FILENAME = file_name_prefix+'_results.csv'
 
     obj = s3.get_object(Bucket=bucket, Key=key) 
     binary_data = obj['Body'].read()
@@ -128,7 +128,6 @@ def lambda_handler(event, context):
     s3.upload_file('/tmp/'+OUTPUT_CSV_FILENAME, S3BUCKETNAME, OUTPUT_FOLDER+'/'+OUTPUT_CSV_FILENAME)
     logger.debug(f"Copied output file to {OUTPUT_FOLDER} folder")
 
-    s3.upload_file('/tmp/'+OUTPUT_CSV_FILENAME, S3BUCKETNAME, RESULTS_FOLDER+'/'+OUTPUT_CSV_FILENAME)
     s3.upload_file('/tmp/'+RESULTS_CSV_FILENAME, S3BUCKETNAME, RESULTS_FOLDER+'/'+RESULTS_CSV_FILENAME)
     logger.debug(f"Copied results file to {RESULTS_FOLDER} folder")
 
