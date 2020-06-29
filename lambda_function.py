@@ -88,10 +88,12 @@ def lambda_handler(event, context):
         writer = csv.writer(number_list_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
 
         row_count = 0
+        logger.debug("Writing header to csv")
+        writer.writerow(['mobile', 'message'])
 
         for row in export_list:
-            print(row)
-            number = row[0].value
+            #print(row)
+            number = str(row[0].value)
             writer.writerow([number, message])
             row_count += 1
 
@@ -126,6 +128,7 @@ def lambda_handler(event, context):
     s3.upload_file('/tmp/'+OUTPUT_CSV_FILENAME, S3BUCKETNAME, OUTPUT_FOLDER+'/'+OUTPUT_CSV_FILENAME)
     logger.debug(f"Copied output file to {OUTPUT_FOLDER} folder")
 
+    s3.upload_file('/tmp/'+OUTPUT_CSV_FILENAME, S3BUCKETNAME, RESULTS_FOLDER+'/'+OUTPUT_CSV_FILENAME)
     s3.upload_file('/tmp/'+RESULTS_CSV_FILENAME, S3BUCKETNAME, RESULTS_FOLDER+'/'+RESULTS_CSV_FILENAME)
     logger.debug(f"Copied results file to {RESULTS_FOLDER} folder")
 
