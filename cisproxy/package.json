@@ -1,0 +1,8 @@
+{
+	"name": "cvd19cisproxy",
+	"version": "0.0.1",
+	"license": "MIT",
+	"description": "This package contains the lambda code for proxying a request through to CIS for SAML retrieval",
+	"dependencies": {
+	}
+}
