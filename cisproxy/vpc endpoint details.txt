@@ -1,0 +1,3 @@
+com.amazonaws.vpce.eu-west-2.vpce-svc-0313606ef47636b35
+port 8080
+HTTP CONNECT
