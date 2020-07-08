@@ -15,7 +15,6 @@ logger.setLevel(logging.DEBUG)
 logger.debug('This will get logged')
 
 # Config Items
-SOURCE_XLSX_FILENAME = "Trust Submission Template - v2.xlsx"
 SOURCE_FOLDER = "upload"
 
 RESULTS_FOLDER = os.getenv(key="RESULTS_FOLDER")
