@@ -11,7 +11,7 @@
         },
         "APIENDPOINT" : {
             "Type": "String",
-            "Default": "https://1z70qngw61.execute-api.eu-west-2.amazonaws.com",
+            "Default": "https://wttcujmdph.execute-api.eu-west-2.amazonaws.com",
             "Description" : "The API endpoint where the token can be exchanged for SAML"
         },
         "CISFQDN" : {
@@ -39,36 +39,6 @@
             "Default" : "live",
             "Description" : "Flag indicating the execution mode for the CIS proxy. A value of stub returns a hard-coded response"
         },
-        "IAMRoleName" : {
-            "Type" : "String",
-            "Default" : "CovidElectiveS3UploadOnlyRole",
-            "Description" : "The name of the IAM role that users assume to upload files"
-        },
-        "S3BucketName" : {
-          "Type" : "String",
-          "Default" : "cvd19electivesurgerylists",
-          "Description" : "The name of the bucket that holds the list of contact numbers and message text"
-        },
-        "S3LogBucketName" : {
-            "Type" : "String",
-            "Default" : "cvd19logbucket",
-            "Description" : "The name of the bucket that holds the logs"
-        },
-        "CloudTrailTrailName" : {
-            "Type" : "String",
-            "Default" : "CovidElectiveSurgeryAccessTrail",
-            "Description" : "The name for the CloudTrail Trail"
-        },
-        "KMSKeyArn" : {
-            "Type" : "String",
-            "Default" : "arn:aws:kms:eu-west-2:906605510545:key/d82da46d-d0d7-4a1d-b9ca-cfc9da5982b8",
-            "Description" : "The Arn of the KMS key used for SNS publishing"
-        },
-        "NotificationTopicArn" : {
-            "Type" : "String",
-            "Default" : "arn:aws:sns:eu-west-2:906605510545:npd-int-1-infra-messaging-sns-topic",
-            "Description" : "The Arn of the topic to publish S3 events"
-        },
         "EnvironmentName" :  {
             "Type" : "String",
             "Default" : "prod",
@@ -78,21 +48,6 @@
             "Type": "String",
             "Default": "com.amazonaws.vpce.eu-west-2.vpce-svc-0313606ef47636b35",
             "Description": "The Shared HSCN Proxy Service Endpoint"
-        },
-        "SMSEnabled" :  {
-            "Type" : "String",
-            "Default" : "true",
-            "Description" : "true/false flag to enable or disable SMS sending"
-        },
-        "SMSSubject" :  {
-            "Type" : "String",
-            "Default" : "NHS",
-            "Description" : "Legacy SenderID for AWS SES"
-        },
-        "SNSTopicName": {
-            "Type" : "String",
-            "Default" : "cvdelvetivesummresults",
-            "Description" : "The SNS Topic Name to which results summaries are published"
         },
         "VPCENDPOINTPORT": {
             "Type" : "String",

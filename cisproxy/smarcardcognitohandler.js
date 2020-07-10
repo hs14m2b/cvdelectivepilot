@@ -24,7 +24,7 @@ exports.handler = async (event) => {
     console.log(cognitoResponse);
     const response = {
         statusCode: 200,
-        body: cognitoResponse
+        body: JSON.stringify(cognitoResponse)
     };
     return response;
     

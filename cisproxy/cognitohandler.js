@@ -15,15 +15,17 @@ module.exports.handleEvent = async (cisResponse, DEFAULTPWD, COGNITOPOOL, COGNIT
     console.log("Got success from SAML response - finding UID");
     let cn = getAttribute(parsedXML,"cn");
     let uid = getAttribute(parsedXML,"uid");
+    let nhsIdCode = getAttribute(parsedXML,"nhsIdCode");
     console.log("after parsing the saml the cn is ", cn);
     console.log("after parsing the saml the uid is ", uid);
+    console.log("after parsing the saml the nhsIdCode is ", nhsIdCode);
     let cognitoUserDetails = await getCognitoUser(COGNITOPOOL, uid, cognitoidentityserviceprovider);
     if (cognitoUserDetails){
       console.log("User exists ", cognitoUserDetails);
     }
     else{
       console.log("User does not exist - adding to user pool");
-      let newCognitoUser = await addCognitoUser(COGNITOCLIENT, COGNITOPOOL, uid, DEFAULTPWD, cognitoidentityserviceprovider);
+      let newCognitoUser = await addCognitoUser(COGNITOCLIENT, COGNITOPOOL, uid, DEFAULTPWD, cognitoidentityserviceprovider, nhsIdCode);
       console.log(newCognitoUser);
       let newCognitoUserConfirm = await confirmUser(COGNITOPOOL, uid, cognitoidentityserviceprovider);
       console.log(newCognitoUserConfirm);
@@ -98,10 +100,21 @@ async function authenticateCognitoUser(COGNITOCLIENT, COGNITOPOOL, uid, DEFAULTP
   });
 }
 
-async function addCognitoUser(COGNITOCLIENT, COGNITOPOOL, uid, DEFAULTPWD, cognitoidentityserviceprovider){
+async function addCognitoUser(COGNITOCLIENT, COGNITOPOOL, uid, DEFAULTPWD, cognitoidentityserviceprovider, nhsIdCode){
   let params = {
     ClientId: COGNITOCLIENT, /* required */
     Password: DEFAULTPWD, /* required */
+    UserAttributes: [
+      {
+        Name: 'custom:organisation', /* required */
+        Value: nhsIdCode
+      },
+      {
+        Name: 'custom:smartcarduser', /* required */
+        Value: "true"
+      }
+      /* more items */
+    ],
     Username: uid /* required */
   };
   return new Promise(function (resolve, reject) {
