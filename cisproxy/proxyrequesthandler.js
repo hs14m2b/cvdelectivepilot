@@ -6,6 +6,7 @@ const https = require('https');
 const http = require('http');
 const fs = require('fs');
 const xml2js = require('xml2js');
+const querystring = require('querystring');
 const cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider();
 const VPCENDPOINT = process.env.VPCENDPOINT;
 const VPCENDPOINTPORT = parseInt(process.env.VPCENDPOINTPORT);
@@ -15,7 +16,7 @@ const EXECMODE = process.env.EXECMODE;
 const cisEventHandler = (EXECMODE == "stub" ? require('./proxyrequeststub') : require('./proxyrequest'));
 
 exports.handler = async (event) => {
-    let cisResponse = await cisEventHandler.handleEvent(event, VPCENDPOINT, VPCENDPOINTPORT, CISFQDN, http, https, fs);
+    let cisResponse = await cisEventHandler.handleEvent(event, VPCENDPOINT, VPCENDPOINTPORT, CISFQDN, http, https, fs, querystring);
     console.log(cisResponse);
     const response = {
         statusCode: 200,

@@ -1,5 +1,5 @@
 
-module.exports.handleEvent = async (event, VPCENDPOINT, VPCENDPOINTPORT, CISFQDN, http, https, fs) => {
+module.exports.handleEvent = async (event, VPCENDPOINT, VPCENDPOINTPORT, CISFQDN, http, https, fs, querystring) => {
   console.log(event);
 	return new Promise(function (resolve, reject) {
   
@@ -22,7 +22,7 @@ module.exports.handleEvent = async (event, VPCENDPOINT, VPCENDPOINTPORT, CISFQDN
             socket: socket,    // using a tunnel
             agent: false,      // cannot use a default agent
             ca: [fs.readFileSync("NHS_DEV_Level_1C.pem"),fs.readFileSync("NHS_PTL_Root_Authority.pem"), fs.readFileSync("NHS_Level_1A.pem"), fs.readFileSync("NHS_Root_Authority.pem")], //load the CIS internal CA certs
-            path: '/saml/RoleAssertion?token='+encodeURI(token)  // specify path to get from server
+            path: '/saml/RoleAssertion?token='+querystring.escape(token)  // specify path to get from server
           }, (res) => {
               let statusCode = res.statusCode;
               console.log('statusCode:', res.statusCode);

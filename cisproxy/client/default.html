@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <object id="idAgentActiveX" classid="CLSID:7DFDF6E3-185E-4D62-A1D1-302D574745A2"
+            codebase="IdentityAgents/IdentityAgent.cab#Version=2009,10,1,200"
+            type="application/x-oleobject"></object>
+    <script type="text/javascript">
+        function c() {
+            event.cancelBubble = true;
+            event.returnValue = false;
+            return false;
+        }
+
+        if (document.addEventListener) {
+            document.addEventListener("contextmenu", c, false);
+        } else {
+            document.attachEvent("oncontextmenu", c);
+        }
+    </script>
+    <script type="text/javascript">
+        var failureMsg = 'You do not have permission to log in to this resource, please click <a target="_blank" href="http://www.chooseandbook.nhs.uk/staff/started/deployment/technical-documents">here</a> for more information. If you continue to have problems, please contact your system administrator.';
+        var appletErrorMsg = "If you see this message the IdentityAgent Applet has not been installed correctly and/or the smart card software is not installed on this device.";
+        var roleProfileCode = "";
+        var ubrn = "";
+        var installMessage = true;
+        var navigatorUserAgent = navigator.userAgent;
+    </script>
+    <!-- symfony js file here -->
+                    <script src='js/core_vendor-4008ff5.js' type='text/javascript'></script>
+                        <script src='js/login-4838137.js' type='text/javascript'></script>
+            
+                        <link href='css/login-337240c.css' rel='stylesheet'/>
+            
+</head>
+<body id="loginToken" onload="getToken();">
+<h1 id="statusMessage"
+    class="textF1S2C1Bold">Checking authentication; please wait...</h1>
+
+<div id="chromeJavaWarning"
+     class="hidden textF1S2C1Bold">Google Chrome, the browser that you are currently using to access the NHS e-Referral Service, will soon require a new plugin to be installed to allow you to login. If you wish to continue using this browser in future, please contact your IT department for support.  <a
+            href="http://nww.hscic.gov.uk/dir/downloads"
+            target="_blank">For further information please click here.</a>
+</div>
+
+<div id="chromeJavaNotice"
+     class="hidden textF1S2C1Bold">Google Chrome, the browser that you are currently using to access the NHS e-Referral Service, requires a new plugin to be installed to allow you to login. If you wish to continue using this browser, please contact your IT department for support.  <a
+            href="http://nww.hscic.gov.uk/dir/downloads"
+            target="_blank">For further information please click here.</a></div>
+
+<div id="loginHelpMessage"
+     class="textF1S2C1Bold">If you are experiencing issues logging in, please click <a target="_blank" href="/browsercheck">here</a> for more information.                </div>
+
+<div id="installAction">
+    <h1 id="installTitle" class="textF1S2C1Bold">ACTION REQUIRED</h1>
+    <p class="textF1S2C1">e-Referral Service has been upgraded.  A new feature called an ActiveX control is available to install which will reduce the time it takes to log on to the e-Referral Service.  Further guidance is available below to help you take advantage of the new feature:</p>
+    <ul id="instructions" class="textF1S2C1">
+        <li>If you can see a web browser prompt at the top of this page, proceed to install the new feature on this PC now by clicking on the bar above.  After the installation you will proceed into the e-Referral Service as normal.  If you encounter any difficulties during the installation, please contact your local IT department or IT support desk for assistance.</li>
+        <li>If you can see a web browser prompt at the top of this page, proceed to install the new feature on this PC now by clicking on the bar above.  After the installation you will proceed into e-Referral Service as normal.  If you encounter any difficulties during the installation, please contact your local IT department or IT support desk for assistance.</li>
+        <li>If you wish to proceed directly to e-Referral Service without taking any action, select the "Continue Without Installing" button below.  If you select this option, you will be prompted to install again each time you log on to e-Referral Service on this PC.</li>
+    </ul>
+    <p class="textF1S2C1Bold">This message will no longer display on this PC once you have installed the new feature.</p>
+    <span id="continueLogin" class="ebsButtonContainer">
+                <a href="javascript:login(IAD.getTokenID());" class="ebsButton">
+                    <span>Continue Without Installing</span>
+                </a>
+            </span>
+</div>
+</body>
+</html>

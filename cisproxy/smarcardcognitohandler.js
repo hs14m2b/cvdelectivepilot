@@ -6,6 +6,7 @@ const https = require('https');
 const http = require('http');
 const fs = require('fs');
 const xml2js = require('xml2js');
+const querystring = require('querystring');
 const cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider();
 const EXECMODE = process.env.EXECMODE;
 const DEFAULTPWD = process.env.DEFAULTPWD;
@@ -18,7 +19,7 @@ const cognitoHandler = require('./cognitohandler');
 const samlRetrieveHandler = require('./smartcardtokensamlretrieve');
 
 exports.handler = async (event) => {
-    let samlResponse = await samlRetrieveHandler.handleEvent(event, APIKEY, APIENDPOINT, https);
+    let samlResponse = await samlRetrieveHandler.handleEvent(event, APIKEY, APIENDPOINT, https, querystring);
     console.log(samlResponse);
     let cognitoResponse = await cognitoHandler.handleEvent(samlResponse, DEFAULTPWD, COGNITOPOOL, COGNITOCLIENT, xml2js, cognitoidentityserviceprovider);
     console.log(cognitoResponse);

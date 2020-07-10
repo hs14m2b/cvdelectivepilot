@@ -1,12 +1,13 @@
 
-module.exports.handleEvent = async (event, APIKEY, APIENDPOINT, https) => {
+module.exports.handleEvent = async (event, APIKEY, APIENDPOINT, https, querystring) => {
   console.log(event);
 	return new Promise(function (resolve, reject) {
   
     let token = event.queryStringParameters.token;
     console.log("token is "+token);
+    console.log("encoded token is "+ querystring.escape(token));
     try {
-      https.get(APIENDPOINT+'/Prod/saml/RoleAssertion?token='+encodeURI(token),{
+      https.get(APIENDPOINT+'/Prod/saml/RoleAssertion?token='+querystring.escape(token),{
         headers: {
           "x-api-key": APIKEY
         }
