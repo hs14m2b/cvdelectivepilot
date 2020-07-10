@@ -4,5 +4,6 @@
 	"license": "MIT",
 	"description": "This package contains the lambda code for proxying a request through to CIS for SAML retrieval",
 	"dependencies": {
+		"xml2js": "0.4.23"
 	}
 }

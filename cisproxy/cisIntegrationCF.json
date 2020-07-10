@@ -1,0 +1,250 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Transform": "AWS::Serverless-2016-10-31",
+    "Description" : "AWS CloudFormation Template to deploy components simulating CIS integration",
+  
+    "Parameters" : {
+        "APIKEY" : {
+            "Type": "String",
+            "Default": "UamrXffOlh7Qa83vWIlxR6TXI9uSenmi5Uf7pyCD",
+            "Description" : "The API Key used to invoke the CIS Proxy API Gateway function"
+        },
+        "APIENDPOINT" : {
+            "Type": "String",
+            "Default": "https://1z70qngw61.execute-api.eu-west-2.amazonaws.com",
+            "Description" : "The API endpoint where the token can be exchanged for SAML"
+        },
+        "CISFQDN" : {
+            "Type" : "String",
+            "Default" : "gas.national.ncrs.nhs.uk",
+            "Description" : "The FQDN of the CIS endpoint for retrieving the SAML assertion"
+        },
+        "COGNITOCLIENT" : {
+            "Type" : "String",
+            "Default" : "56laregh69mus25djqa34s5nun",
+            "Description" : "Client ID used to interact with cognito user pool"
+        },
+        "COGNITOPOOL" : {
+            "Type" : "String",
+            "Default" : "eu-west-2_kWs9QfKn6",
+            "Description" : "Id of the cognito pool in which smartcard users are created"
+        },
+        "DEFAULTPWD" : {
+            "Type" : "String",
+            "Default" : "wedieriTYeve?rjk458975789sdkljksdfuih234egt",
+            "Description" : "Default password for cognito accounts for smartcard users - in a real system this would be the Secrets Manager key where the password is stored"
+        },
+        "EXECMODE" : {
+            "Type" : "String",
+            "Default" : "live",
+            "Description" : "Flag indicating the execution mode for the CIS proxy. A value of stub returns a hard-coded response"
+        },
+        "IAMRoleName" : {
+            "Type" : "String",
+            "Default" : "CovidElectiveS3UploadOnlyRole",
+            "Description" : "The name of the IAM role that users assume to upload files"
+        },
+        "S3BucketName" : {
+          "Type" : "String",
+          "Default" : "cvd19electivesurgerylists",
+          "Description" : "The name of the bucket that holds the list of contact numbers and message text"
+        },
+        "S3LogBucketName" : {
+            "Type" : "String",
+            "Default" : "cvd19logbucket",
+            "Description" : "The name of the bucket that holds the logs"
+        },
+        "CloudTrailTrailName" : {
+            "Type" : "String",
+            "Default" : "CovidElectiveSurgeryAccessTrail",
+            "Description" : "The name for the CloudTrail Trail"
+        },
+        "KMSKeyArn" : {
+            "Type" : "String",
+            "Default" : "arn:aws:kms:eu-west-2:906605510545:key/d82da46d-d0d7-4a1d-b9ca-cfc9da5982b8",
+            "Description" : "The Arn of the KMS key used for SNS publishing"
+        },
+        "NotificationTopicArn" : {
+            "Type" : "String",
+            "Default" : "arn:aws:sns:eu-west-2:906605510545:npd-int-1-infra-messaging-sns-topic",
+            "Description" : "The Arn of the topic to publish S3 events"
+        },
+        "EnvironmentName" :  {
+            "Type" : "String",
+            "Default" : "prod",
+            "Description" : "The logical environment name"
+        },
+        "HSCNProxyServiceName": {
+            "Type": "String",
+            "Default": "com.amazonaws.vpce.eu-west-2.vpce-svc-0313606ef47636b35",
+            "Description": "The Shared HSCN Proxy Service Endpoint"
+        },
+        "SMSEnabled" :  {
+            "Type" : "String",
+            "Default" : "true",
+            "Description" : "true/false flag to enable or disable SMS sending"
+        },
+        "SMSSubject" :  {
+            "Type" : "String",
+            "Default" : "NHS",
+            "Description" : "Legacy SenderID for AWS SES"
+        },
+        "SNSTopicName": {
+            "Type" : "String",
+            "Default" : "cvdelvetivesummresults",
+            "Description" : "The SNS Topic Name to which results summaries are published"
+        },
+        "VPCENDPOINTPORT": {
+            "Type" : "String",
+            "Default" : "8080",
+            "Description" : "The port number on which the HSCN proxy runs"
+        }
+    },  
+    "Conditions" : {
+        "ProdNaming" : {"Fn::Equals" : [{"Ref" : "EnvironmentName"}, "prod"]}
+    },
+    "Globals": {
+        "Function": {
+            "Timeout" : 300
+        }
+    },
+    "Resources" : {
+        "cvd19CISLambdaRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties" : {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Action": "sts:AssumeRole",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                            }
+                        }
+                    ]
+                },
+                "ManagedPolicyArns" : [ "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole", 
+                    "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"],
+                "Path": "/service-role/",
+                "RoleName" : {"Fn::Join": ["", [{"Ref": "EnvironmentName"}, "-", "cvd19CISLambdaRole"]]}
+            }
+        },
+        "cvd19CustomPolicyLambdaRole": {
+            "Type" : "AWS::IAM::Policy",
+            "Properties" : {
+                "PolicyDocument" : {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Action": [
+                          "ec2:*",
+                          "cognito-identity:*",
+                          "cognito-idp:*"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": "*"
+                      }
+                    ]
+                  },
+                "PolicyName" : {"Fn::Join": ["", [{"Ref": "EnvironmentName"}, "-", "cvd19CISIntegrationPolicy"]]},
+                "Roles" : [ {"Ref" : "cvd19CISLambdaRole"} ]
+            }
+        },
+        "cvdcisvpcendpoint": {
+            "Type" : "AWS::EC2::VPCEndpoint",
+            "Properties" : {
+                "PrivateDnsEnabled" : false,
+                "SecurityGroupIds" : [ "sg-5be54b3e" ],
+                "ServiceName" : {"Ref": "HSCNProxyServiceName"},
+                "SubnetIds" : [ "subnet-8bd84bf1", "subnet-6072d42c" ],
+                "VpcEndpointType" : "Interface",
+                "VpcId" : "vpc-f1125f99"
+              }
+        },
+        "cvdcisproxyfunction": {
+            "Type" : "AWS::Serverless::Function",
+            "Properties" : {
+                "CodeUri" : "s3://cvd19pilotcoderepo/cisproxy-v0.06.zip",
+                "Description": "function that proxies a request through to CIS",
+                "Environment": {
+                    "Variables" : {
+                        "VPCENDPOINT" : { "Fn::Select" : [ 1, { "Fn::Split" : [ ":", { "Fn::Select" : [ 0, { "Fn::GetAtt" : [ "cvdcisvpcendpoint", "DnsEntries" ] }]} ] }]},
+                        "VPCENDPOINTPORT" : {"Ref" : "VPCENDPOINTPORT"},
+                        "CISFQDN" : {"Ref" : "CISFQDN"},
+                        "EXECMODE": {"Ref": "EXECMODE"},
+                        "COGNITOCLIENT" : {"Ref": "COGNITOCLIENT"},
+                        "COGNITOPOOL" : {"Ref" : "COGNITOPOOL"},
+                        "DEFAULTPWD" : {"Ref" : "DEFAULTPWD"}
+                    }
+                },
+                "Events" : {
+                    "ApiEvent" : {
+                        "Type": "Api",
+                        "Properties" : {
+                            "Auth": {
+                                "ApiKeyRequired": true
+                            },
+                            "Method": "GET",
+                            "Path": "/saml/RoleAssertion"
+                        }
+                    }
+                },
+                "FunctionName" : {"Fn::Join": ["", [{"Ref": "EnvironmentName"}, "-", "cvd19PilotCISProxyLambda"]]},
+                "Handler" : "proxyrequesthandler.handler",
+                "Role" : {"Fn::GetAtt" : ["cvd19CISLambdaRole", "Arn"] },
+                "Runtime": "nodejs12.x",
+                "Timeout" : 10,
+                "Tags" : { "Environment":  {"Ref": "EnvironmentName"} },
+                "VpcConfig" : {
+                    "SecurityGroupIds" : [ "sg-5be54b3e" ],
+                    "SubnetIds" : [ "subnet-8bd84bf1", "subnet-6072d42c" ]
+                }
+            }
+        },
+        "cvdcognitosmartcardfunction": {
+            "Type" : "AWS::Serverless::Function",
+            "Properties" : {
+                "CodeUri" : "s3://cvd19pilotcoderepo/cisproxy-v0.06.zip",
+                "Description": "function that authenticates user via smartcard SAML",
+                "Environment": {
+                    "Variables" : {
+                        "VPCENDPOINT" : { "Fn::Select" : [ 1, { "Fn::Split" : [ ":", { "Fn::Select" : [ 0, { "Fn::GetAtt" : [ "cvdcisvpcendpoint", "DnsEntries" ] }]} ] }]},
+                        "VPCENDPOINTPORT" : {"Ref" : "VPCENDPOINTPORT"},
+                        "CISFQDN" : {"Ref" : "CISFQDN"},
+                        "EXECMODE": {"Ref": "EXECMODE"},
+                        "COGNITOCLIENT" : {"Ref": "COGNITOCLIENT"},
+                        "COGNITOPOOL" : {"Ref" : "COGNITOPOOL"},
+                        "DEFAULTPWD" : {"Ref" : "DEFAULTPWD"},
+                        "APIKEY": {"Ref": "APIKEY"},
+                        "APIENDPOINT": {"Ref": "APIENDPOINT"}
+                    }
+                },
+                "Events" : {
+                    "ApiEvent" : {
+                        "Type": "Api",
+                        "Properties" : {
+                            "Auth": {
+                                "ApiKeyRequired": true
+                            },
+                            "Method": "GET",
+                            "Path": "/saml/CognitoSmartcardAuth"
+                        }
+                    }
+                },
+                "FunctionName" : {"Fn::Join": ["", [{"Ref": "EnvironmentName"}, "-", "cvd19PilotSmartcardCognitoAuthLambda"]]},
+                "Handler" : "smarcardcognitohandler.handler",
+                "Role" : {"Fn::GetAtt" : ["cvd19CISLambdaRole", "Arn"] },
+                "Runtime": "nodejs12.x",
+                "Timeout" : 10,
+                "Tags" : { "Environment":  {"Ref": "EnvironmentName"} }
+            }
+        }
+    },
+    "Outputs" : {
+        "cvdcisvpcendpointdnsnames" : {
+          "Description" : "DNS Name for the VPC endpoint",
+          "Value" : { "Fn::Select" : [ 1, { "Fn::Split" : [ ":", { "Fn::Select" : [ 0, { "Fn::GetAtt" : [ "cvdcisvpcendpoint", "DnsEntries" ] }]} ] }]}
+        }
+      }}
+  

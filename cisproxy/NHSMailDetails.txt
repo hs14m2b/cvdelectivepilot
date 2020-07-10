@@ -1,0 +1,110 @@
+OIDC details
+client_id - fcf27ffa-ead0-471c-9dfa-7e8363fccda4
+client secret - SS6xeY-vIdeV_UhQ-NeiKtvvXN1gIBehx2BLcBUe
+redirect_uri - https://dev.cvd19electivesurgery.nhsdta.com/oidc/authresponse
+
+fcf27ffa-ead0-471c-9dfa-7e8363fccda4:SS6xeY-vIdeV_UhQ-NeiKtvvXN1gIBehx2BLcBUe
+ZmNmMjdmZmEtZWFkMC00NzFjLTlkZmEtN2U4MzYzZmNjZGE0OlNTNnhlWS12SWRlVl9VaFEtTmVpS3R2dlhOMWdJQmVoeDJCTGNCVWU=
+
+https://fs.nhs.net/adfs/.well-known/openid-configuration
+
+
+request
+
+https://fs.nhs.net/adfs/oauth2/authorize?client_id=fcf27ffa-ead0-471c-9dfa-7e8363fccda4&scope=openid+profile+email&response_type=code&redirect_uri=https://dev.cvd19electivesurgery.nhsdta.com/oidc/authresponse&nonce=SDLKFJSDLKJFSDLKFJS&claims={"id_token":{"mfa_auth_time": {"essential": true}}}&state=blah
+
+claims={"id_token":{"mfa_auth_time": {"essential": true}}}
+
+example response
+https://dev.cvd19electivesurgery.nhsdta.com/oidc/authresponse?code=9f9GrdQzO0OlHdsBkZpjzQ.e8QE6dgj2AjHCeLlCkfrbObv-SE.oVW_HYXx9_L_4yQ1LhYX9y-GWd7nSD0QmjMwa3SZTUWl6B7oIojJPQXFy6zKhI88KCJ45XZ96NIxle0S2qBIbYIeLW9k_cd-HU5QT9d6tfTaHYQx7-xqv6ngkMWS6tw4Z8XK2lStElBSkCJVeSdv_QHgt7d0Su85JctW3dNZiCAY6KlFrgI4CF0BW14rOZ6KIxsU7GeUmbtQo58zqNDMaAQYMVDAGHSTvDklpmayIZ172dy2D_EcLfa9hIFQvfd1WlBiD8X3JohgDMajkk6N66Zz8pffCLgdHqOUfU5s4MBX5SZBIAmtnMifYO9yK2n4RLfQitHSm-XOpdKoV0g8lA
+
+
+{
+  "issuer": "https://fs.nhs.net/adfs",
+  "authorization_endpoint": "https://fs.nhs.net/adfs/oauth2/authorize/",
+  "token_endpoint": "https://fs.nhs.net/adfs/oauth2/token/",
+  "jwks_uri": "https://fs.nhs.net/adfs/discovery/keys",
+  "token_endpoint_auth_methods_supported": [
+    "client_secret_post",
+    "client_secret_basic",
+    "private_key_jwt",
+    "windows_client_authentication"
+  ],
+  "response_types_supported": [
+    "code",
+    "id_token",
+    "code id_token",
+    "id_token token",
+    "code token",
+    "code id_token token"
+  ],
+  "response_modes_supported": [
+    "query",
+    "fragment",
+    "form_post"
+  ],
+  "grant_types_supported": [
+    "authorization_code",
+    "refresh_token",
+    "client_credentials",
+    "urn:ietf:params:oauth:grant-type:jwt-bearer",
+    "implicit",
+    "password",
+    "srv_challenge",
+    "urn:ietf:params:oauth:grant-type:device_code",
+    "device_code"
+  ],
+  "subject_types_supported": [
+    "pairwise"
+  ],
+  "scopes_supported": [
+    "capion_crmapi",
+    "allatclaims",
+    "capion_api",
+    "user_impersonation",
+    "openid",
+    "vpn_cert",
+    "email",
+    "aza",
+    "winhello_cert",
+    "profile",
+    "logon_cert"
+  ],
+  "id_token_signing_alg_values_supported": [
+    "RS256"
+  ],
+  "token_endpoint_auth_signing_alg_values_supported": [
+    "RS256"
+  ],
+  "access_token_issuer": "http://fs.nhs.net/adfs/services/trust",
+  "claims_supported": [
+    "aud",
+    "iss",
+    "iat",
+    "exp",
+    "auth_time",
+    "nonce",
+    "at_hash",
+    "c_hash",
+    "sub",
+    "upn",
+    "unique_name",
+    "pwd_url",
+    "pwd_exp",
+    "mfa_auth_time",
+    "sid",
+    "nbf"
+  ],
+  "microsoft_multi_refresh_token": true,
+  "userinfo_endpoint": "https://fs.nhs.net/adfs/userinfo",
+  "capabilities": [],
+  "end_session_endpoint": "https://fs.nhs.net/adfs/oauth2/logout",
+  "as_access_token_token_binding_supported": true,
+  "as_refresh_token_token_binding_supported": true,
+  "resource_access_token_token_binding_supported": true,
+  "op_id_token_token_binding_supported": true,
+  "rp_id_token_token_binding_supported": true,
+  "frontchannel_logout_supported": true,
+  "frontchannel_logout_session_supported": true,
+  "device_authorization_endpoint": "https://fs.nhs.net/adfs/oauth2/devicecode"
+}

@@ -4,10 +4,40 @@
     "Description" : "AWS CloudFormation Template to add role and S3 bucket for Covid 19 elective surgery pilot. ",
   
     "Parameters" : {
+        "APIKEY" : {
+            "Type": "String",
+            "Default": "UamrXffOlh7Qa83vWIlxR6TXI9uSenmi5Uf7pyCD",
+            "Description" : "The API Key used to invoke the CIS Proxy API Gateway function"
+        },
+        "APIENDPOINT" : {
+            "Type": "String",
+            "Default": "https://1z70qngw61.execute-api.eu-west-2.amazonaws.com",
+            "Description" : "The API endpoint where the token can be exchanged for SAML"
+        },
         "CISFQDN" : {
             "Type" : "String",
             "Default" : "gas.national.ncrs.nhs.uk",
             "Description" : "The FQDN of the CIS endpoint for retrieving the SAML assertion"
+        },
+        "COGNITOCLIENT" : {
+            "Type" : "String",
+            "Default" : "56laregh69mus25djqa34s5nun",
+            "Description" : "Client ID used to interact with cognito user pool"
+        },
+        "COGNITOPOOL" : {
+            "Type" : "String",
+            "Default" : "eu-west-2_kWs9QfKn6",
+            "Description" : "Id of the cognito pool in which smartcard users are created"
+        },
+        "DEFAULTPWD" : {
+            "Type" : "String",
+            "Default" : "wedieriTYeve?rjk458975789sdkljksdfuih234egt",
+            "Description" : "Default password for cognito accounts for smartcard users - in a real system this would be the Secrets Manager key where the password is stored"
+        },
+        "EXECMODE" : {
+            "Type" : "String",
+            "Default" : "live",
+            "Description" : "Flag indicating the execution mode for the CIS proxy. A value of stub returns a hard-coded response"
         },
         "IAMRoleName" : {
             "Type" : "String",
@@ -281,7 +311,9 @@
                       },
                       {
                         "Action": [
-                          "ec2:*"
+                          "ec2:*",
+                          "cognito-identity:*",
+                          "cognito-idp:*"
                         ],
                         "Effect": "Allow",
                         "Resource": "*"
@@ -561,13 +593,17 @@
         "cvdcisproxyfunction": {
             "Type" : "AWS::Serverless::Function",
             "Properties" : {
-                "CodeUri" : "s3://cvd19pilotcoderepo/cisproxy-v0.03.zip",
+                "CodeUri" : "s3://cvd19pilotcoderepo/cisproxy-v0.06.zip",
                 "Description": "function that proxies a request through to CIS",
                 "Environment": {
                     "Variables" : {
                         "VPCENDPOINT" : { "Fn::Select" : [ 1, { "Fn::Split" : [ ":", { "Fn::Select" : [ 0, { "Fn::GetAtt" : [ "cvdcisvpcendpoint", "DnsEntries" ] }]} ] }]},
                         "VPCENDPOINTPORT" : {"Ref" : "VPCENDPOINTPORT"},
-                        "CISFQDN" : {"Ref" : "CISFQDN"}
+                        "CISFQDN" : {"Ref" : "CISFQDN"},
+                        "EXECMODE": {"Ref": "EXECMODE"},
+                        "COGNITOCLIENT" : {"Ref": "COGNITOCLIENT"},
+                        "COGNITOPOOL" : {"Ref" : "COGNITOPOOL"},
+                        "DEFAULTPWD" : {"Ref" : "DEFAULTPWD"}
                     }
                 },
                 "Events" : {
@@ -586,12 +622,50 @@
                 "Handler" : "proxyrequesthandler.handler",
                 "Role" : {"Fn::GetAtt" : ["cvd19LambdaRole", "Arn"] },
                 "Runtime": "nodejs12.x",
-                "Timeout" : 300,
+                "Timeout" : 10,
                 "Tags" : { "Environment":  {"Ref": "EnvironmentName"} },
                 "VpcConfig" : {
                     "SecurityGroupIds" : [ "sg-5be54b3e" ],
                     "SubnetIds" : [ "subnet-8bd84bf1", "subnet-6072d42c" ]
                 }
+            }
+        },
+        "cvdcognitosmartcardfunction": {
+            "Type" : "AWS::Serverless::Function",
+            "Properties" : {
+                "CodeUri" : "s3://cvd19pilotcoderepo/cisproxy-v0.06.zip",
+                "Description": "function that authenticates user via smartcard SAML",
+                "Environment": {
+                    "Variables" : {
+                        "VPCENDPOINT" : { "Fn::Select" : [ 1, { "Fn::Split" : [ ":", { "Fn::Select" : [ 0, { "Fn::GetAtt" : [ "cvdcisvpcendpoint", "DnsEntries" ] }]} ] }]},
+                        "VPCENDPOINTPORT" : {"Ref" : "VPCENDPOINTPORT"},
+                        "CISFQDN" : {"Ref" : "CISFQDN"},
+                        "EXECMODE": {"Ref": "EXECMODE"},
+                        "COGNITOCLIENT" : {"Ref": "COGNITOCLIENT"},
+                        "COGNITOPOOL" : {"Ref" : "COGNITOPOOL"},
+                        "DEFAULTPWD" : {"Ref" : "DEFAULTPWD"},
+                        "APIKEY": {"Ref": "APIKEY"},
+                        "APIENDPOINT": {"Ref": "APIENDPOINT"}
+                    }
+                },
+                "Events" : {
+                    "ApiEvent" : {
+                        "Type": "Api",
+                        "Properties" : {
+                            "Auth": {
+                                "ApiKeyRequired": true
+                            },
+                            "Method": "GET",
+                            "Path": "/saml/CognitoSmartcardAuth"
+                        }
+                    }
+                },
+                "FunctionName" : {"Fn::Join": ["", [{"Ref": "EnvironmentName"}, "-", "cvd19PilotSmartcardCognitoAuthLambda"]]},
+                "Handler" : "smarcardcognitohandler.handler",
+                "Role" : {"Fn::GetAtt" : ["cvd19LambdaRole", "Arn"] },
+                "Runtime": "nodejs12.x",
+                "Timeout" : 10,
+                "Tags" : { "Environment":  {"Ref": "EnvironmentName"} }
             }
         }
     },
