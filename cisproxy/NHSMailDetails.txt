@@ -108,3 +108,9 @@ https://dev.cvd19electivesurgery.nhsdta.com/oidc/authresponse?code=9f9GrdQzO0OlH
   "frontchannel_logout_session_supported": true,
   "device_authorization_endpoint": "https://fs.nhs.net/adfs/oauth2/devicecode"
 }
+
+cognito configuration
+https://covidtesting.auth.eu-west-2.amazoncognito.com
+
+https://covidtesting.auth.eu-west-2.amazoncognito.com/oauth2/authorize?client_id=7sbkghsb75t9ns392ptfmiiqf4&response_type=code&scope=email+openid+phone+profile&redirect_uri=http://localhost:4000/index
+https://covidtesting.auth.eu-west-2.amazoncognito.com/logout?client_id=7sbkghsb75t9ns392ptfmiiqf4&logout_uri=http://localhost:4000/logout
