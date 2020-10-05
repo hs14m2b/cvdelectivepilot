@@ -4,4 +4,4 @@ bin/*
 env/*
 packages/*
 processexcel.zip
-cisproxy/*
+cisproxy/node_modules/*

@@ -1,0 +1,395 @@
+<samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:1.0:protocol" ResponseID="null" InResponseTo="null" MajorVersion="1" MinorVersion="1" IssueInstant="2020-07-10T07:03:38Z" Recipient="172.16.143.51">
+    <samlp:Status>
+        <samlp:StatusCode Value="samlp:Success"/>
+    </samlp:Status>
+    <saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:1.0:assertion" MajorVersion="1" MinorVersion="1" AssertionID="1240844c6f58a7b1e2cd5ed96aa6796b763397bfg" Issuer="http://iam-careid-development:8080" IssueInstant="2020-07-10T07:03:38Z">
+        <saml:Conditions NotBefore="2020-07-10T07:00:38Z" NotOnOrAfter="2020-07-10T07:04:38Z"/>
+        <saml:AttributeStatement>
+            <saml:Subject>
+                <saml:NameIdentifier NameQualifier="o=nhs">uid=666736367041,ou=People,o=nhs</saml:NameIdentifier>
+                <saml:SubjectConfirmation>
+                    <saml:ConfirmationMethod>urn:com:sun:identity</saml:ConfirmationMethod>
+                    <saml:SubjectConfirmationData>
+                        <saml:Assertion MajorVersion="1" MinorVersion="1" AssertionID="9485261b780fb6a5377293f043290f0b514bed5dp" Issuer="http://iam-careid-development:8080" IssueInstant="2020-07-10T07:03:38Z">
+                            <saml:Conditions NotBefore="2020-07-10T07:00:38Z" NotOnOrAfter="2020-07-10T07:04:38Z"/>
+                            <saml:AuthenticationStatement AuthenticationInstant="2020-07-10T07:03:19Z" AuthenticationMethod="urn:com:sun:identity:ExtendedLoginModule">
+                                <saml:Subject>
+                                    <saml:NameIdentifier NameQualifier="o=nhs">uid=666736367041,ou=People,o=nhs</saml:NameIdentifier>
+                                    <saml:SubjectConfirmation>
+                                        <saml:ConfirmationMethod>urn:com:sun:identity</saml:ConfirmationMethod>
+                                        <saml:SubjectConfirmationData>AQIC5wM2LY4SfcxRjGCtcyc06OgXEvTO70b8bJarpbVokm4=@AAJTSQACMDE=#</saml:SubjectConfirmationData>
+                                    </saml:SubjectConfirmation>
+                                </saml:Subject>
+                                <saml:SubjectLocality IPAddress="172.16.143.51"/>
+                            </saml:AuthenticationStatement>
+                        </saml:Assertion>
+                    </saml:SubjectConfirmationData>
+                </saml:SubjectConfirmation>
+            </saml:Subject>
+            <saml:Attribute AttributeName="ssbAssertionVersion" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>1.1</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="cn" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>Bloggs Kevin Dr</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="uid" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>666736367041</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsOcsPrCode" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>G8940498</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="ssbSessionRoleUid" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>251081507044</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="ssbMode" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>0</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsIdCode" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>Y77856</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="o" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>THE SURGERY</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsBusinessFunctions" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>Complete Work Item</saml:AttributeValue>
+                <saml:AttributeValue>Perform Clinically Restricted Administration</saml:AttributeValue>
+                <saml:AttributeValue>Amend Work Item</saml:AttributeValue>
+                <saml:AttributeValue>Cancel Prescription</saml:AttributeValue>
+                <saml:AttributeValue>Establish Sealing Controls</saml:AttributeValue>
+                <saml:AttributeValue>Local System Configuration</saml:AttributeValue>
+                <saml:AttributeValue>Local System Administration</saml:AttributeValue>
+                <saml:AttributeValue>Perform Clinical Documents</saml:AttributeValue>
+                <saml:AttributeValue>Manage Ad-hoc Reports</saml:AttributeValue>
+                <saml:AttributeValue>Amend Patient Administration</saml:AttributeValue>
+                <saml:AttributeValue>Perform Prescription Preparation</saml:AttributeValue>
+                <saml:AttributeValue>Manage Patient Administration</saml:AttributeValue>
+                <saml:AttributeValue>Reauthorise medication</saml:AttributeValue>
+                <saml:AttributeValue>Authorise External Report Production and Release</saml:AttributeValue>
+                <saml:AttributeValue>Manage Outbound Referrals</saml:AttributeValue>
+                <saml:AttributeValue>Supplementary Prescribing</saml:AttributeValue>
+                <saml:AttributeValue>View Shared Non Patient Identifiable Information</saml:AttributeValue>
+                <saml:AttributeValue>Manage Detailed Health Records</saml:AttributeValue>
+                <saml:AttributeValue>View Detailed Health Records</saml:AttributeValue>
+                <saml:AttributeValue>View Test/Investigation Requests</saml:AttributeValue>
+                <saml:AttributeValue>View Summary Health Records</saml:AttributeValue>
+                <saml:AttributeValue>Amend Patient Demographics</saml:AttributeValue>
+                <saml:AttributeValue>Independent Prescribing</saml:AttributeValue>
+                <saml:AttributeValue>Manage Outbound Appointments</saml:AttributeValue>
+                <saml:AttributeValue>Analyse Audit Trails</saml:AttributeValue>
+                <saml:AttributeValue>Perform Patient Administration</saml:AttributeValue>
+                <saml:AttributeValue>View Patient Medication</saml:AttributeValue>
+                <saml:AttributeValue>Control Consent Status</saml:AttributeValue>
+                <saml:AttributeValue>View Clinical Documents</saml:AttributeValue>
+                <saml:AttributeValue>Execute Ad-hoc Reports</saml:AttributeValue>
+                <saml:AttributeValue>Create Work Item</saml:AttributeValue>
+                <saml:AttributeValue>Execute Administrative Reports</saml:AttributeValue>
+                <saml:AttributeValue>Manage Clinical Documents</saml:AttributeValue>
+                <saml:AttributeValue>Manage Staff Diary/Rotas</saml:AttributeValue>
+                <saml:AttributeValue>Perform Detailed Health Record</saml:AttributeValue>
+                <saml:AttributeValue>Perform Test/Investigation Requests</saml:AttributeValue>
+                <saml:AttributeValue>View Patient Administration</saml:AttributeValue>
+                <saml:AttributeValue>Manage Test/Investigation Requests</saml:AttributeValue>
+                <saml:AttributeValue>Personal Medication Administration</saml:AttributeValue>
+                <saml:AttributeValue>Verify Health Records</saml:AttributeValue>
+                <saml:AttributeValue>Verify Clinical Documents</saml:AttributeValue>
+                <saml:AttributeValue>Amend Test/Investigation Requests</saml:AttributeValue>
+                <saml:AttributeValue>Access Sensitive(S) Flagged Records</saml:AttributeValue>
+                <saml:AttributeValue>Perform Patient Demographics</saml:AttributeValue>
+                <saml:AttributeValue>View Patient Demographics</saml:AttributeValue>
+                <saml:AttributeValue>Perform Clinical Coding</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsBusinessFunctionsCodes" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>B0056</saml:AttributeValue>
+                <saml:AttributeValue>B8015</saml:AttributeValue>
+                <saml:AttributeValue>B0094</saml:AttributeValue>
+                <saml:AttributeValue>B0468</saml:AttributeValue>
+                <saml:AttributeValue>B0080</saml:AttributeValue>
+                <saml:AttributeValue>B1700</saml:AttributeValue>
+                <saml:AttributeValue>B0062</saml:AttributeValue>
+                <saml:AttributeValue>B8011</saml:AttributeValue>
+                <saml:AttributeValue>B0994</saml:AttributeValue>
+                <saml:AttributeValue>B8013</saml:AttributeValue>
+                <saml:AttributeValue>B0278</saml:AttributeValue>
+                <saml:AttributeValue>B8017</saml:AttributeValue>
+                <saml:AttributeValue>B0422</saml:AttributeValue>
+                <saml:AttributeValue>B0977</saml:AttributeValue>
+                <saml:AttributeValue>B1101</saml:AttributeValue>
+                <saml:AttributeValue>B0440</saml:AttributeValue>
+                <saml:AttributeValue>B1570</saml:AttributeValue>
+                <saml:AttributeValue>B8029</saml:AttributeValue>
+                <saml:AttributeValue>B0360</saml:AttributeValue>
+                <saml:AttributeValue>B8018</saml:AttributeValue>
+                <saml:AttributeValue>B0370</saml:AttributeValue>
+                <saml:AttributeValue>B0825</saml:AttributeValue>
+                <saml:AttributeValue>B0420</saml:AttributeValue>
+                <saml:AttributeValue>B1103</saml:AttributeValue>
+                <saml:AttributeValue>B0011</saml:AttributeValue>
+                <saml:AttributeValue>B0560</saml:AttributeValue>
+                <saml:AttributeValue>B0401</saml:AttributeValue>
+                <saml:AttributeValue>B0020</saml:AttributeValue>
+                <saml:AttributeValue>B8010</saml:AttributeValue>
+                <saml:AttributeValue>B0991</saml:AttributeValue>
+                <saml:AttributeValue>B0093</saml:AttributeValue>
+                <saml:AttributeValue>B8004</saml:AttributeValue>
+                <saml:AttributeValue>B0815</saml:AttributeValue>
+                <saml:AttributeValue>B0862</saml:AttributeValue>
+                <saml:AttributeValue>B0380</saml:AttributeValue>
+                <saml:AttributeValue>B8020</saml:AttributeValue>
+                <saml:AttributeValue>B8012</saml:AttributeValue>
+                <saml:AttributeValue>B8024</saml:AttributeValue>
+                <saml:AttributeValue>B0428</saml:AttributeValue>
+                <saml:AttributeValue>B8028</saml:AttributeValue>
+                <saml:AttributeValue>B0143</saml:AttributeValue>
+                <saml:AttributeValue>B8019</saml:AttributeValue>
+                <saml:AttributeValue>B1611</saml:AttributeValue>
+                <saml:AttributeValue>B0830</saml:AttributeValue>
+                <saml:AttributeValue>B0820</saml:AttributeValue>
+                <saml:AttributeValue>B0790</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsJobRole" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>"Clinical":"Clinical Provision":"Clinical Practitioner Access Role"</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="uniqueIdentifier" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>251081507044</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsJobRoleCode" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>S8000:G8000:R8000</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsIdCode" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>RXE</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="o" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>ROTHERHAM DONCASTER AND SOUTH HUMBER NHS FOUNDATION TRUST</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsBusinessFunctions" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>View deleted items in patient records</saml:AttributeValue>
+                <saml:AttributeValue>Manage Appointments and Clinics (Primary Care)</saml:AttributeValue>
+                <saml:AttributeValue>Start Consultations</saml:AttributeValue>
+                <saml:AttributeValue>Amend consultation notes after saving</saml:AttributeValue>
+                <saml:AttributeValue>Local password Administration</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsBusinessFunctionsCodes" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>B0371</saml:AttributeValue>
+                <saml:AttributeValue>B0310</saml:AttributeValue>
+                <saml:AttributeValue>B0312</saml:AttributeValue>
+                <saml:AttributeValue>B0372</saml:AttributeValue>
+                <saml:AttributeValue>B0252</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsJobRole" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>"Clinical":"Clinical Provision":"Clinical Practitioner Access Role"</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="uniqueIdentifier" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>754708767100</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsJobRoleCode" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>S8000:G8000:R8000</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsWorkGroupsCodes" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>375734138569</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsWorkGroups" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>Doncaster Children Young People &amp; Families CYP&amp;F (CIS-Don-CYPF)</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsIdCode" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>F55613</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="o" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>THE OTHER PRACTICE</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsBusinessFunctions" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>Manage Appointments and Clinics (Primary Care)</saml:AttributeValue>
+                <saml:AttributeValue>Administer System (Org Level)</saml:AttributeValue>
+                <saml:AttributeValue>Amend consultation notes after saving</saml:AttributeValue>
+                <saml:AttributeValue>Perform Patient Registration Search</saml:AttributeValue>
+                <saml:AttributeValue>Proxy Manage Outbound Referrals</saml:AttributeValue>
+                <saml:AttributeValue>Perform Security Controlled Amendment</saml:AttributeValue>
+                <saml:AttributeValue>Register Patients</saml:AttributeValue>
+                <saml:AttributeValue>Manage Test administration</saml:AttributeValue>
+                <saml:AttributeValue>Local password Administration</saml:AttributeValue>
+                <saml:AttributeValue>View deleted items in patient records</saml:AttributeValue>
+                <saml:AttributeValue>Can report IOS and REG claims</saml:AttributeValue>
+                <saml:AttributeValue>Modify Drug Formularies</saml:AttributeValue>
+                <saml:AttributeValue>Manage Outbound Referrals</saml:AttributeValue>
+                <saml:AttributeValue>Receive Legal Override and Emergency View Alerts</saml:AttributeValue>
+                <saml:AttributeValue>Manage Outbound Appointments</saml:AttributeValue>
+                <saml:AttributeValue>Manage clinical configuration</saml:AttributeValue>
+                <saml:AttributeValue>Administer electronic document interchange (EDI)</saml:AttributeValue>
+                <saml:AttributeValue>Book Embargoed/Restricted Appointments</saml:AttributeValue>
+                <saml:AttributeValue>Manage Complex Clinical Reports</saml:AttributeValue>
+                <saml:AttributeValue>Create free-floating appointments</saml:AttributeValue>
+                <saml:AttributeValue>Access clinical decision support tools</saml:AttributeValue>
+                <saml:AttributeValue>Legal Override of Consent</saml:AttributeValue>
+                <saml:AttributeValue>Analyse Audit Trails</saml:AttributeValue>
+                <saml:AttributeValue>Execute Reports and Queries</saml:AttributeValue>
+                <saml:AttributeValue>Graph Administration</saml:AttributeValue>
+                <saml:AttributeValue>Access Sensitive(S) Flagged Records</saml:AttributeValue>
+                <saml:AttributeValue>Manage Supplementary Patient Documents</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsBusinessFunctionsCodes" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>B0310</saml:AttributeValue>
+                <saml:AttributeValue>B1065</saml:AttributeValue>
+                <saml:AttributeValue>B0372</saml:AttributeValue>
+                <saml:AttributeValue>B0254</saml:AttributeValue>
+                <saml:AttributeValue>B1102</saml:AttributeValue>
+                <saml:AttributeValue>B0332</saml:AttributeValue>
+                <saml:AttributeValue>B0340</saml:AttributeValue>
+                <saml:AttributeValue>B0445</saml:AttributeValue>
+                <saml:AttributeValue>B0252</saml:AttributeValue>
+                <saml:AttributeValue>B0371</saml:AttributeValue>
+                <saml:AttributeValue>B0250</saml:AttributeValue>
+                <saml:AttributeValue>B0492</saml:AttributeValue>
+                <saml:AttributeValue>B1101</saml:AttributeValue>
+                <saml:AttributeValue>B0015</saml:AttributeValue>
+                <saml:AttributeValue>B1103</saml:AttributeValue>
+                <saml:AttributeValue>B0500</saml:AttributeValue>
+                <saml:AttributeValue>B1681</saml:AttributeValue>
+                <saml:AttributeValue>B0304</saml:AttributeValue>
+                <saml:AttributeValue>B0530</saml:AttributeValue>
+                <saml:AttributeValue>B0302</saml:AttributeValue>
+                <saml:AttributeValue>B0466</saml:AttributeValue>
+                <saml:AttributeValue>B0082</saml:AttributeValue>
+                <saml:AttributeValue>B0011</saml:AttributeValue>
+                <saml:AttributeValue>B0540</saml:AttributeValue>
+                <saml:AttributeValue>B0253</saml:AttributeValue>
+                <saml:AttributeValue>B1611</saml:AttributeValue>
+                <saml:AttributeValue>B0390</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsJobRole" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>"M&amp;D":"Medical - M&amp;D":"General Medical Practitioner"</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="uniqueIdentifier" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>567732695109</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsJobRoleCode" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>S0010:G0020:R0260</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsWorkGroupsCodes" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>691235136039</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsWorkGroups" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>THE OTHER PRACTICE</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsIdCode" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>F55613</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="o" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>THE OTHER PRACTICE</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsBusinessFunctions" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>Analyse Audit Trails</saml:AttributeValue>
+                <saml:AttributeValue>Personal Medication Administration</saml:AttributeValue>
+                <saml:AttributeValue>Reauthorise medication</saml:AttributeValue>
+                <saml:AttributeValue>Manage Detailed Health Records</saml:AttributeValue>
+                <saml:AttributeValue>Execute Administrative Reports</saml:AttributeValue>
+                <saml:AttributeValue>Complete Work Item</saml:AttributeValue>
+                <saml:AttributeValue>Manage Test/Investigation Requests</saml:AttributeValue>
+                <saml:AttributeValue>Amend Patient Administration</saml:AttributeValue>
+                <saml:AttributeValue>Verify Clinical Documents</saml:AttributeValue>
+                <saml:AttributeValue>Perform Clinically Restricted Administration</saml:AttributeValue>
+                <saml:AttributeValue>Perform Clinical Coding</saml:AttributeValue>
+                <saml:AttributeValue>Perform Patient Demographics</saml:AttributeValue>
+                <saml:AttributeValue>Manage Staff Diary/Rotas</saml:AttributeValue>
+                <saml:AttributeValue>View Patient Medication</saml:AttributeValue>
+                <saml:AttributeValue>Manage Clinical Documents</saml:AttributeValue>
+                <saml:AttributeValue>View Patient Administration</saml:AttributeValue>
+                <saml:AttributeValue>Amend Patient Demographics</saml:AttributeValue>
+                <saml:AttributeValue>Manage Ad-hoc Reports</saml:AttributeValue>
+                <saml:AttributeValue>Perform Clinical Documents</saml:AttributeValue>
+                <saml:AttributeValue>Local System Configuration</saml:AttributeValue>
+                <saml:AttributeValue>Execute Ad-hoc Reports</saml:AttributeValue>
+                <saml:AttributeValue>View Detailed Health Records</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsBusinessFunctionsCodes" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>B0011</saml:AttributeValue>
+                <saml:AttributeValue>B0428</saml:AttributeValue>
+                <saml:AttributeValue>B0422</saml:AttributeValue>
+                <saml:AttributeValue>B8029</saml:AttributeValue>
+                <saml:AttributeValue>B8004</saml:AttributeValue>
+                <saml:AttributeValue>B0056</saml:AttributeValue>
+                <saml:AttributeValue>B8024</saml:AttributeValue>
+                <saml:AttributeValue>B8013</saml:AttributeValue>
+                <saml:AttributeValue>B0143</saml:AttributeValue>
+                <saml:AttributeValue>B8015</saml:AttributeValue>
+                <saml:AttributeValue>B0790</saml:AttributeValue>
+                <saml:AttributeValue>B0830</saml:AttributeValue>
+                <saml:AttributeValue>B0862</saml:AttributeValue>
+                <saml:AttributeValue>B0401</saml:AttributeValue>
+                <saml:AttributeValue>B0815</saml:AttributeValue>
+                <saml:AttributeValue>B8012</saml:AttributeValue>
+                <saml:AttributeValue>B0825</saml:AttributeValue>
+                <saml:AttributeValue>B0994</saml:AttributeValue>
+                <saml:AttributeValue>B8011</saml:AttributeValue>
+                <saml:AttributeValue>B1700</saml:AttributeValue>
+                <saml:AttributeValue>B0991</saml:AttributeValue>
+                <saml:AttributeValue>B0360</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsJobRole" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>"Clinical":"Clinical Provision":"Clinical Practitioner Access Role"</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="uniqueIdentifier" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>568606758100</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsJobRoleCode" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>S8000:G8000:R8000</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsWorkGroupsCodes" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>691235136039</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsWorkGroups" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>THE OTHER PRACTICE</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsIdCode" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>Y00301</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="o" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>URGENT CARE CTR (FCMS) OOH</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsBusinessFunctions" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>Independent Prescribing</saml:AttributeValue>
+                <saml:AttributeValue>Cancel Prescription</saml:AttributeValue>
+                <saml:AttributeValue>View Patient Medication</saml:AttributeValue>
+                <saml:AttributeValue>Perform Prescription Preparation</saml:AttributeValue>
+                <saml:AttributeValue>Access SCR Application (Perform Patient Trace)</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsBusinessFunctionsCodes" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>B0420</saml:AttributeValue>
+                <saml:AttributeValue>B0468</saml:AttributeValue>
+                <saml:AttributeValue>B0401</saml:AttributeValue>
+                <saml:AttributeValue>B0278</saml:AttributeValue>
+                <saml:AttributeValue>B0264</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsJobRole" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>"Clinical":"Clinical Provision":"Clinical Practitioner Access Role"</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="uniqueIdentifier" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>574791018102</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsJobRoleCode" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>S8000:G8000:R8000</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsIdCode" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>Y00301</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="o" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>URGENT CARE CTR (FCMS) OOH</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsBusinessFunctions" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>View Child Protection Plan Information</saml:AttributeValue>
+                <saml:AttributeValue>Access SCR Application (Perform Patient Trace)</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsBusinessFunctionsCodes" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>B0107</saml:AttributeValue>
+                <saml:AttributeValue>B0264</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsJobRole" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>"Support":"Support":"Admin/Clinical Support Access Role"</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="uniqueIdentifier" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>574791019103</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute AttributeName="nhsJobRoleCode" AttributeNamespace="http://www.syntegra.com">
+                <saml:AttributeValue>S8001:G8002:R8008</saml:AttributeValue>
+            </saml:Attribute>
+        </saml:AttributeStatement>
+    </saml:Assertion>
+</samlp:Response>
